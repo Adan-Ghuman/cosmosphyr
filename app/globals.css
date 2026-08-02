@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --color-background: #050507;
+  --color-text-primary: #e6e8ec;
+  --color-accent-ice: #8ebfd4;
+  --color-glow: rgba(174, 190, 210, 0.35);
+
+  --font-display: var(--font-body-face), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-body-face), ui-sans-serif, system-ui, sans-serif;
+
+  --space-section-y: clamp(4rem, 12vw, 8rem);
+  --focus-ring: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-accent-ice);
+
+  --size-hero-min-block: 100svh;
+  --size-hero-band-mobile: min(42vw, 16rem);
+  --space-hero-content-top-mobile: clamp(2.5rem, 8vw, 4rem);
+  --space-hero-content-bottom-desktop: clamp(3rem, 10vh, 6rem);
+
+  --space-brand-gap: clamp(1.5rem, 4vw, 2.5rem);
+  --space-brand-gap-desktop: clamp(2rem, 5vw, 4rem);
+  --size-brand-stage-mobile: min(28vw, 10rem);
+  --size-brand-stage-desktop: min(22vw, 12rem);
+  --size-brand-crescent-reserve: clamp(3rem, 8vw, 5rem);
+
+  --size-orbit-accent: 1.75rem;
+
+  --space-case-study-y: clamp(2.5rem, 6vw, 4.5rem);
+  --space-proof-gap: clamp(1.5rem, 4vw, 2rem);
+  --space-process-gap: clamp(1.5rem, 4vw, 2.5rem);
+  --size-process-connector: clamp(1.5rem, 4vw, 2.5rem);
+
+  --space-form-gap: 1.25rem;
+  --color-form-border: rgba(174, 190, 210, 0.28);
+  --color-form-surface: rgba(230, 232, 236, 0.04);
+}
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-text-primary: var(--color-text-primary);
+  --color-accent-ice: var(--color-accent-ice);
+  --color-glow: var(--color-glow);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+}
