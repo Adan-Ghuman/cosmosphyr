@@ -1,4 +1,5 @@
 import { capabilities } from "./capabilities";
+import { navCopy } from "./nav";
 import { processSteps } from "./process";
 import { projects } from "./projects";
 import { proofItems } from "./proof";
@@ -13,8 +14,11 @@ export type {
   SiteCopy,
 } from "./types";
 
+export type { NavCopy, NavLink } from "./nav";
+
 export {
   capabilities,
+  navCopy,
   processSteps,
   projects,
   proofItems,

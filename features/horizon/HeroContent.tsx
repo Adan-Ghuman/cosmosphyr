@@ -8,11 +8,11 @@ export function HeroContent() {
     <div className="flex max-w-xl flex-col gap-5 md:gap-6">
       <div className="relative h-16 w-16 md:h-20 md:w-20">
         <Image
-          src="/cosmosphyr-mark.png"
+          src="/logo.png"
           alt="Cosmosphyr mark"
           fill
           sizes="80px"
-          className="object-contain"
+          className="object-contain object-center"
           priority
         />
       </div>

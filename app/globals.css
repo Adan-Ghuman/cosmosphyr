@@ -12,9 +12,15 @@
   --space-section-y: clamp(4rem, 12vw, 8rem);
   --focus-ring: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-accent-ice);
 
+  --size-nav-height: 3.75rem;
+  --color-nav-surface: rgba(5, 5, 7, 0.72);
+  --color-nav-border: rgba(174, 190, 210, 0.22);
+
   --size-hero-min-block: 100svh;
   --size-hero-band-mobile: min(42vw, 16rem);
-  --space-hero-content-top-mobile: clamp(2.5rem, 8vw, 4rem);
+  --space-hero-content-top-mobile: calc(
+    var(--size-nav-height) + clamp(1.5rem, 5vw, 2.75rem)
+  );
   --space-hero-content-bottom-desktop: clamp(3rem, 10vh, 6rem);
 
   --space-brand-gap: clamp(1.5rem, 4vw, 2.5rem);
@@ -47,6 +53,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: var(--size-nav-height);
   }
 
   @media (prefers-reduced-motion: reduce) {
