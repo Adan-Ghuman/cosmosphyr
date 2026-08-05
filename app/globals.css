@@ -13,15 +13,41 @@
   --focus-ring: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-accent-ice);
 
   --size-nav-height: 3.75rem;
-  --color-nav-surface: rgba(5, 5, 7, 0.72);
+  --space-nav-inset-x: clamp(0.75rem, 2.5vw, 1.5rem);
+  --space-nav-inset-y: 0.75rem;
+  --size-nav-clearance: calc(var(--space-nav-inset-y) + var(--size-nav-height));
+  --radius-nav: 1rem;
+  --color-nav-surface: rgba(5, 5, 7, 0.55);
   --color-nav-border: rgba(174, 190, 210, 0.22);
+  --size-nav-dot: 0.25rem;
+  --shadow-nav-dot: 0 0 10px rgba(142, 191, 212, 0.9);
+  --color-nav-overlay: rgba(5, 5, 7, 0.78);
+  --space-nav-link-gap: clamp(0.75rem, 1.6vw, 1.35rem);
 
   --size-hero-min-block: 100svh;
   --size-hero-band-mobile: min(42vw, 16rem);
   --space-hero-content-top-mobile: calc(
-    var(--size-nav-height) + clamp(1.5rem, 5vw, 2.75rem)
+    var(--size-nav-clearance) + clamp(1.5rem, 5vw, 2.75rem)
   );
   --space-hero-content-bottom-desktop: clamp(3rem, 10vh, 6rem);
+  --space-hero-content-top-desktop: calc(
+    var(--size-nav-clearance) + clamp(2.5rem, 8vh, 5rem)
+  );
+  --space-hero-stack-gap: clamp(1rem, 2.5vw, 1.5rem);
+  --size-hero-divider-width: 2.5rem;
+  --size-hero-divider-height: 1px;
+  --hero-image-object-position: 68% 42%;
+  --hero-image-object-position-mobile: 72% 38%;
+  --hero-scrim: linear-gradient(
+    105deg,
+    rgba(5, 5, 7, 0.88) 0%,
+    rgba(5, 5, 7, 0.62) 38%,
+    rgba(5, 5, 7, 0.18) 62%,
+    rgba(5, 5, 7, 0.35) 100%
+  );
+  --color-cta-border: rgba(142, 191, 212, 0.65);
+  --shadow-cta-glow: 0 0 18px rgba(142, 191, 212, 0.28);
+  --radius-cta: 9999px;
 
   --space-brand-gap: clamp(1.5rem, 4vw, 2.5rem);
   --space-brand-gap-desktop: clamp(2rem, 5vw, 4rem);
@@ -53,7 +79,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: var(--size-nav-height);
+    scroll-padding-top: var(--size-nav-clearance);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -80,5 +106,21 @@
   :focus-visible {
     outline: none;
     box-shadow: var(--focus-ring);
+  }
+}
+
+@layer components {
+  .hero-scrim {
+    background-image: var(--hero-scrim);
+  }
+
+  .hero-plate {
+    object-position: var(--hero-image-object-position-mobile);
+  }
+
+  @media (min-width: 768px) {
+    .hero-plate {
+      object-position: var(--hero-image-object-position);
+    }
   }
 }

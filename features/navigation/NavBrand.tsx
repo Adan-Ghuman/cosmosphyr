@@ -1,11 +1,17 @@
 import Image from "next/image";
 import { navCopy } from "@/content";
 
-export function NavBrand() {
+type NavBrandProps = {
+  onNavigate?: () => void;
+  className?: string;
+};
+
+export function NavBrand({ onNavigate, className = "" }: NavBrandProps) {
   return (
     <a
       href={navCopy.brandHref}
-      className="inline-flex min-h-11 items-center gap-2 text-text-primary"
+      onClick={onNavigate}
+      className={`inline-flex min-h-11 items-center gap-2 text-text-primary ${className}`.trim()}
     >
       <span className="relative size-7 shrink-0">
         <Image
@@ -17,7 +23,7 @@ export function NavBrand() {
           priority
         />
       </span>
-      <span className="font-display text-sm tracking-tight md:text-base">
+      <span className="font-display text-sm tracking-[0.14em] uppercase md:text-base">
         {navCopy.brandLabel}
       </span>
     </a>

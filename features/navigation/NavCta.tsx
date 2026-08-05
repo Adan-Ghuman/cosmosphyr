@@ -10,7 +10,7 @@ export function NavCta({ className = "", onNavigate }: NavCtaProps) {
     <a
       href={navCopy.ctaHref}
       onClick={onNavigate}
-      className={`inline-flex min-h-11 items-center text-sm text-accent-ice underline-offset-4 hover:underline ${className}`.trim()}
+      className={`inline-flex min-h-11 items-center justify-center rounded-(--radius-cta) border border-(--color-cta-border) px-5 text-sm tracking-wide text-accent-ice uppercase shadow-(--shadow-cta-glow) transition-colors hover:bg-accent-ice/10 ${className}`.trim()}
     >
       {navCopy.ctaLabel}
     </a>

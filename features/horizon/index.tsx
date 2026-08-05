@@ -6,4 +6,5 @@ export function Horizon() {
 
 export { Hero } from "./Hero";
 export { HeroContent } from "./HeroContent";
+export { HorizonHeroImage } from "./HorizonHeroImage";
 export { ScrollCue } from "./ScrollCue";

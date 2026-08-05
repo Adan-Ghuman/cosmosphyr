@@ -3,7 +3,7 @@
 import { useHorizon } from "@/shared/motion";
 import { useRef } from "react";
 import { HeroContent } from "./HeroContent";
-import { HorizonFallbackField } from "./HorizonFallbackField";
+import { HorizonHeroImage } from "./HorizonHeroImage";
 import { HorizonScene } from "./HorizonScene";
 import { MobileHorizonScene } from "./MobileHorizonScene";
 import { ScrollCue } from "./ScrollCue";
@@ -11,12 +11,13 @@ import { useIgnitionAbsent } from "./useIgnitionAbsent";
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const streakRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const ignitionAbsent = useIgnitionAbsent();
 
-  useHorizon(streakRef, {
+  useHorizon(contentRef, {
     enabled: ignitionAbsent,
     trigger: sectionRef,
+    xPercent: -8,
     start: "top 75%",
     end: "bottom 45%",
   });
@@ -26,21 +27,27 @@ export function Hero() {
       ref={sectionRef}
       id="horizon"
       aria-label="The Horizon"
-      className="relative flex flex-col md:min-h-(--size-hero-min-block)"
+      className="relative flex min-h-(--size-hero-min-block) flex-col"
     >
-      <div className="relative z-10 order-1 px-6 pt-(--space-hero-content-top-mobile) pb-8 md:absolute md:inset-x-0 md:top-auto md:bottom-(--space-hero-content-bottom-desktop) md:order-0 md:mx-auto md:w-full md:max-w-5xl md:px-6 md:pt-0 md:pb-0">
-        <HeroContent />
-      </div>
-
-      <div className="relative order-2 h-(--size-hero-band-mobile) w-full md:absolute md:inset-0 md:order-0 md:h-auto">
+      <div className="absolute inset-0">
         <MobileHorizonScene className="h-full">
           <HorizonScene className="h-full">
-            <HorizonFallbackField streakRef={streakRef} />
+            <HorizonHeroImage />
           </HorizonScene>
         </MobileHorizonScene>
+        <div className="hero-scrim pointer-events-none absolute inset-0" />
       </div>
 
-      <div className="relative z-10 order-3 flex justify-center px-6 py-6 md:absolute md:inset-x-0 md:bottom-4 md:order-0 md:py-0">
+      <div
+        ref={contentRef}
+        className="relative z-10 flex flex-1 flex-col justify-center px-6 pt-(--space-hero-content-top-mobile) pb-16 md:pt-(--space-hero-content-top-desktop) md:pb-(--space-hero-content-bottom-desktop)"
+      >
+        <div className="mx-auto w-full max-w-5xl">
+          <HeroContent />
+        </div>
+      </div>
+
+      <div className="relative z-10 flex justify-center px-6 pb-6 md:absolute md:inset-x-0 md:bottom-4 md:pb-0">
         <ScrollCue />
       </div>
     </section>
