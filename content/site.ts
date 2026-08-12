@@ -29,4 +29,11 @@ export const siteCopy: SiteCopy = {
     deliveryPendingHelper:
       "Form delivery is not connected yet. Fields are ready; sending comes later.",
   },
+  selectedWork: {
+    eyebrow: "Selected Work",
+    headline: "Selected Work",
+    intro:
+      "Public products and anonymized NDA systems. Outcomes and demo URLs remain draft until verified.",
+    demoLabel: "Go to website",
+  },
 };

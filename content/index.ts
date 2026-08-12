@@ -7,6 +7,7 @@ import { siteCopy } from "./site";
 
 export type {
   Capability,
+  CapabilityIcon,
   ProcessStep,
   Project,
   ProjectTypeOption,

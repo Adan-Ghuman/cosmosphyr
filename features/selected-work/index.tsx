@@ -1,3 +1,4 @@
 export { SelectedWork } from "./SelectedWork";
-export { ProjectCaseStudy } from "./ProjectCaseStudy";
+export { SelectedWorkField } from "./SelectedWorkField";
 export { SelectedWorkReveal } from "./SelectedWorkReveal";
+export { WorkCard } from "./WorkCard";

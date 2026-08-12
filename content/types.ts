@@ -17,8 +17,11 @@ export type ProofItem = {
   sourceProjectId: string;
 };
 
+export type CapabilityIcon = "ai" | "software" | "web-mobile" | "cloud";
+
 export type Capability = {
   id: string;
+  icon: CapabilityIcon;
   title:
     | "AI & Intelligent Systems"
     | "Software Engineering"
@@ -57,6 +60,12 @@ export type SiteCopy = {
     intro: string;
     submitLabel: string;
     deliveryPendingHelper: string;
+  };
+  selectedWork: {
+    eyebrow: string;
+    headline: string;
+    intro: string;
+    demoLabel: string;
   };
   isDraft: boolean;
 };
