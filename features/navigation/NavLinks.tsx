@@ -43,33 +43,22 @@ export function NavLinks({
               aria-current={isActive ? "true" : undefined}
               className={
                 isMobile
-                  ? "group relative flex min-h-14 w-full items-center justify-between text-base tracking-wide text-text-primary/85 uppercase transition-colors hover:text-accent-ice focus-visible:text-accent-ice aria-current:text-accent-ice"
-                  : "group relative inline-flex min-h-11 items-center text-xs tracking-[0.14em] text-text-primary/80 uppercase transition-colors hover:text-accent-ice focus-visible:text-accent-ice aria-current:text-accent-ice"
+                  ? "nav-link group relative flex min-h-14 w-full items-center justify-between text-base tracking-wide text-text-primary/85 uppercase"
+                  : "nav-link group relative inline-flex min-h-11 items-center text-xs tracking-[0.14em] text-text-primary/80 uppercase transition-[color,text-shadow] duration-200"
               }
             >
-              <span className="relative">
-                {link.label}
-                {!isMobile ? (
-                  <span
-                    aria-hidden="true"
-                    className={`pointer-events-none absolute top-full left-1/2 mt-1 size-(--size-nav-dot) -translate-x-1/2 rounded-full bg-accent-ice shadow-(--shadow-nav-dot) transition-opacity ${
-                      isActive
-                        ? "opacity-100"
-                        : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
-                    }`}
-                  />
-                ) : null}
-              </span>
-              {isMobile ? (
-                <span
-                  aria-hidden="true"
-                  className={`size-(--size-nav-dot) shrink-0 rounded-full bg-accent-ice shadow-(--shadow-nav-dot) transition-opacity ${
-                    isActive
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
-                  }`}
-                />
-              ) : null}
+              {!isMobile ? (
+                <>
+                  <span aria-hidden="true" className="nav-link-aura" />
+                  <span className="relative z-10">{link.label}</span>
+                  <span aria-hidden="true" className="nav-link-horizon" />
+                </>
+              ) : (
+                <>
+                  <span className="relative z-10">{link.label}</span>
+                  <span aria-hidden="true" className="nav-link-mobile-orbit" />
+                </>
+              )}
             </a>
           </li>
         );

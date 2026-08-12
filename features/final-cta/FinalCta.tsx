@@ -14,10 +14,7 @@ export function FinalCta() {
               {headline}
             </h2>
             <p className="text-lg text-text-primary/80">{subtext}</p>
-            <a
-              href={ctaHref}
-              className="inline-flex min-h-11 w-fit items-center text-accent-ice underline-offset-4 hover:underline"
-            >
+            <a href={ctaHref} className="cta-text text-lg">
               {ctaLabel}
             </a>
           </div>

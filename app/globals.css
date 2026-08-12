@@ -36,8 +36,6 @@
   --space-hero-stack-gap: clamp(1rem, 2.5vw, 1.5rem);
   --size-hero-divider-width: 2.5rem;
   --size-hero-divider-height: 1px;
-  --hero-image-object-position: 68% 42%;
-  --hero-image-object-position-mobile: 72% 38%;
   --hero-scrim: linear-gradient(
     105deg,
     rgba(5, 5, 7, 0.88) 0%,
@@ -47,7 +45,14 @@
   );
   --color-cta-border: rgba(142, 191, 212, 0.65);
   --shadow-cta-glow: 0 0 18px rgba(142, 191, 212, 0.28);
+  --shadow-cta-glow-hover: 0 0 22px rgba(142, 191, 212, 0.55),
+    0 0 42px rgba(142, 191, 212, 0.28);
   --radius-cta: 9999px;
+  --nav-link-aura: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    rgba(142, 191, 212, 0.35),
+    transparent 72%
+  );
 
   --space-brand-gap: clamp(1.5rem, 4vw, 2.5rem);
   --space-brand-gap-desktop: clamp(2rem, 5vw, 4rem);
@@ -114,13 +119,149 @@
     background-image: var(--hero-scrim);
   }
 
-  .hero-plate {
-    object-position: var(--hero-image-object-position-mobile);
+  .cta-button {
+    display: inline-flex;
+    min-height: 2.75rem;
+    width: fit-content;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-cta);
+    border: 1px solid var(--color-cta-border);
+    padding-inline: 1.25rem;
+    color: var(--color-accent-ice);
+    text-decoration: none;
+    box-shadow: var(--shadow-cta-glow);
+    transition:
+      color 160ms ease,
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      background-color 160ms ease;
   }
 
-  @media (min-width: 768px) {
-    .hero-plate {
-      object-position: var(--hero-image-object-position);
+  .cta-button:hover,
+  .cta-button:focus-visible {
+    color: var(--color-background);
+    border-color: var(--color-accent-ice);
+    background-color: var(--color-accent-ice);
+    text-decoration: none;
+    box-shadow: var(--shadow-cta-glow-hover);
+  }
+
+  .cta-text {
+    display: inline-flex;
+    min-height: 2.75rem;
+    width: fit-content;
+    align-items: center;
+    color: var(--color-accent-ice);
+    text-decoration: none;
+    transition: color 160ms ease;
+  }
+
+  .cta-text:hover,
+  .cta-text:focus-visible {
+    color: var(--color-accent-ice);
+    text-decoration: none;
+    opacity: 0.85;
+  }
+
+  .nav-link {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .nav-link-aura {
+    position: absolute;
+    inset: -0.4rem -0.85rem;
+    z-index: -1;
+    border-radius: 9999px;
+    background-image: var(--nav-link-aura);
+    opacity: 0;
+    transform: scale(0.85);
+    transition:
+      opacity 220ms ease,
+      transform 220ms ease;
+    pointer-events: none;
+  }
+
+  .nav-link-horizon {
+    position: absolute;
+    bottom: 0.4rem;
+    left: 50%;
+    height: 1px;
+    width: 0;
+    translate: -50% 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-accent-ice),
+      transparent
+    );
+    box-shadow: var(--shadow-nav-dot);
+    opacity: 0;
+    transition:
+      width 280ms ease,
+      opacity 220ms ease;
+    pointer-events: none;
+  }
+
+  .nav-link:hover,
+  .nav-link:focus-visible,
+  .nav-link[aria-current="true"] {
+    color: var(--color-accent-ice);
+    text-shadow: 0 0 18px rgba(142, 191, 212, 0.45);
+  }
+
+  .nav-link:hover .nav-link-aura,
+  .nav-link:focus-visible .nav-link-aura,
+  .nav-link[aria-current="true"] .nav-link-aura {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .nav-link:hover .nav-link-horizon,
+  .nav-link:focus-visible .nav-link-horizon {
+    width: 100%;
+    opacity: 1;
+  }
+
+  .nav-link[aria-current="true"] .nav-link-horizon {
+    width: 55%;
+    opacity: 0.7;
+  }
+
+  .nav-link-mobile-orbit {
+    width: var(--size-nav-dot);
+    height: var(--size-nav-dot);
+    border-radius: 9999px;
+    background: var(--color-accent-ice);
+    box-shadow: var(--shadow-nav-dot);
+    opacity: 0;
+    transform: scale(0.4);
+    transition:
+      opacity 200ms ease,
+      transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-link:hover .nav-link-mobile-orbit,
+  .nav-link:focus-visible .nav-link-mobile-orbit,
+  .nav-link[aria-current="true"] .nav-link-mobile-orbit {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link,
+    .nav-link-aura,
+    .nav-link-horizon,
+    .nav-link-mobile-orbit,
+    .cta-button {
+      transition: none;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible,
+    .nav-link[aria-current="true"] {
+      text-shadow: none;
     }
   }
 }
