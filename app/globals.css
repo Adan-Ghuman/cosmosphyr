@@ -241,14 +241,15 @@
   }
 
   .nav-link:hover,
-  .nav-link:focus-visible,
+  .nav-link:focus-visible {
+    color: var(--color-accent-ice);
+  }
+
   .nav-link[aria-current="true"] {
     color: var(--color-accent-ice);
     text-shadow: 0 0 18px rgba(142, 191, 212, 0.45);
   }
 
-  .nav-link:hover .nav-link-aura,
-  .nav-link:focus-visible .nav-link-aura,
   .nav-link[aria-current="true"] .nav-link-aura {
     opacity: 1;
     transform: scale(1);
@@ -278,8 +279,6 @@
       transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .nav-link:hover .nav-link-mobile-orbit,
-  .nav-link:focus-visible .nav-link-mobile-orbit,
   .nav-link[aria-current="true"] .nav-link-mobile-orbit {
     opacity: 1;
     transform: scale(1);
@@ -294,8 +293,6 @@
       transition: none;
     }
 
-    .nav-link:hover,
-    .nav-link:focus-visible,
     .nav-link[aria-current="true"] {
       text-shadow: none;
     }

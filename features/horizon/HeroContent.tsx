@@ -4,7 +4,7 @@ export function HeroContent() {
   const { headline, subhead, ctaLabel, ctaHref } = siteCopy.hero;
 
   return (
-    <div className="flex max-w-xl flex-col gap-(--space-hero-stack-gap)">
+    <div className="mx-auto flex max-w-xl flex-col items-center text-center gap-(--space-hero-stack-gap)">
       <h1
         data-hero-reveal
         className="font-display text-4xl leading-tight tracking-tight text-text-primary md:text-6xl"
