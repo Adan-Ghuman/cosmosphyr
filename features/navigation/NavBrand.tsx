@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import { navCopy } from "@/content";
+import { GlitchText } from "@/shared/ui/GlitchText";
 
 type NavBrandProps = {
   onNavigate?: () => void;
@@ -11,9 +14,9 @@ export function NavBrand({ onNavigate, className = "" }: NavBrandProps) {
     <a
       href={navCopy.brandHref}
       onClick={onNavigate}
-      className={`inline-flex min-h-11 items-center gap-2 text-text-primary ${className}`.trim()}
+      className={`group inline-flex min-h-10 items-center gap-2 text-text-primary min-[1100px]:gap-2.5 ${className}`.trim()}
     >
-      <span className="relative size-7 shrink-0">
+      <span className="relative size-5.5 shrink-0 transition-transform duration-200 group-hover:scale-105 min-[1100px]:size-7">
         <Image
           src="/logo.png"
           alt=""
@@ -23,9 +26,10 @@ export function NavBrand({ onNavigate, className = "" }: NavBrandProps) {
           priority
         />
       </span>
-      <span className="font-display text-sm tracking-[0.14em] uppercase md:text-base">
-        {navCopy.brandLabel}
-      </span>
+      <GlitchText
+        text={navCopy.brandLabel}
+        className="text-xs tracking-[0.13em] uppercase min-[1100px]:text-sm min-[1100px]:tracking-[0.16em]"
+      />
     </a>
   );
 }

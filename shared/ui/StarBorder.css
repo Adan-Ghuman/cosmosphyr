@@ -1,0 +1,60 @@
+.star-border-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.star-border-gradient-bottom {
+  position: absolute;
+  width: 300%;
+  height: 60%;
+  opacity: 0.65;
+  bottom: -10px;
+  right: -250%;
+  border-radius: 50%;
+  animation: star-movement-bottom linear infinite alternate;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.star-border-gradient-top {
+  position: absolute;
+  opacity: 0.65;
+  width: 300%;
+  height: 60%;
+  top: -10px;
+  left: -250%;
+  border-radius: 50%;
+  animation: star-movement-top linear infinite alternate;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes star-movement-bottom {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-100%, 0%);
+    opacity: 0.15;
+  }
+}
+
+@keyframes star-movement-top {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(100%, 0%);
+    opacity: 0.15;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-border-gradient-bottom,
+  .star-border-gradient-top {
+    animation: none !important;
+    opacity: 0.35 !important;
+  }
+}
