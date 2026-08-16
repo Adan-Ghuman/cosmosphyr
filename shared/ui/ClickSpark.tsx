@@ -34,7 +34,7 @@ export function ClickSpark({
 }: ClickSparkProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sparksRef = useRef<Spark[]>([]);
-  const startTimeRef = useRef<number | null>(null);
+  const animationIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -43,7 +43,7 @@ export function ClickSpark({
     const parent = canvas.parentElement;
     if (!parent) return;
 
-    let resizeTimeout: NodeJS.Timeout;
+    let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
     const resizeCanvas = () => {
       const { width, height } = parent.getBoundingClientRect();
@@ -54,7 +54,7 @@ export function ClickSpark({
     };
 
     const handleResize = () => {
-      clearTimeout(resizeTimeout);
+      if (resizeTimeout) clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(resizeCanvas, 100);
     };
 
@@ -65,7 +65,7 @@ export function ClickSpark({
 
     return () => {
       ro.disconnect();
-      clearTimeout(resizeTimeout);
+      if (resizeTimeout) clearTimeout(resizeTimeout);
     };
   }, []);
 
@@ -85,18 +85,13 @@ export function ClickSpark({
     [easing]
   );
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  const draw = useCallback(
+    (timestamp: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    let animationId: number;
-
-    const draw = (timestamp: number) => {
-      if (!startTimeRef.current) {
-        startTimeRef.current = timestamp;
-      }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       sparksRef.current = sparksRef.current.filter((spark) => {
@@ -127,15 +122,24 @@ export function ClickSpark({
         return true;
       });
 
-      animationId = requestAnimationFrame(draw);
-    };
+      if (sparksRef.current.length > 0) {
+        animationIdRef.current = requestAnimationFrame(draw);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        animationIdRef.current = null;
+      }
+    },
+    [duration, easeFunc, extraScale, sparkColor, sparkRadius, sparkSize]
+  );
 
-    animationId = requestAnimationFrame(draw);
-
+  useEffect(() => {
     return () => {
-      cancelAnimationFrame(animationId);
+      if (animationIdRef.current !== null) {
+        cancelAnimationFrame(animationIdRef.current);
+        animationIdRef.current = null;
+      }
     };
-  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale]);
+  }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const canvas = canvasRef.current;
@@ -153,6 +157,10 @@ export function ClickSpark({
     }));
 
     sparksRef.current.push(...newSparks);
+
+    if (animationIdRef.current === null) {
+      animationIdRef.current = requestAnimationFrame(draw);
+    }
   };
 
   return (

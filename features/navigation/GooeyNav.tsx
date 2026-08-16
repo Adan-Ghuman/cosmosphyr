@@ -39,7 +39,7 @@ export function GooeyNav({
   const textRef = useRef<HTMLSpanElement>(null);
 
   const isClickLockedRef = useRef(false);
-  const clickLockTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const clickLockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const matchedIndex = activeHref
     ? items.findIndex((item) => item.href === activeHref)
@@ -213,22 +213,11 @@ export function GooeyNav({
     onNavigate?.();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLAnchorElement>, index: number) => {
-    if (e.key === "Enter" || e.key === " ") {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLAnchorElement>) => {
+    // Let Enter trigger native anchor click naturally; handle Space for parity
+    if (e.key === " ") {
       e.preventDefault();
-      const liEl = e.currentTarget.closest("li");
-      if (liEl) {
-        isClickLockedRef.current = true;
-        if (clickLockTimeoutRef.current) {
-          clearTimeout(clickLockTimeoutRef.current);
-        }
-        clickLockTimeoutRef.current = setTimeout(() => {
-          isClickLockedRef.current = false;
-        }, 850);
-
-        triggerGooey(index, liEl as HTMLElement, true);
-        onNavigate?.();
-      }
+      e.currentTarget.click();
     }
   };
 
@@ -244,7 +233,7 @@ export function GooeyNav({
               <a
                 href={item.href}
                 onClick={(e) => handleClick(e, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
+                onKeyDown={handleKeyDown}
               >
                 {item.label}
               </a>

@@ -30,7 +30,7 @@ export function GlobalClickSpark({
 }: GlobalClickSparkProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sparksRef = useRef<Spark[]>([]);
-  const startTimeRef = useRef<number | null>(null);
+  const animationIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -65,18 +65,13 @@ export function GlobalClickSpark({
     [easing]
   );
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  const draw = useCallback(
+    (timestamp: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    let animationId: number;
-
-    const draw = (timestamp: number) => {
-      if (!startTimeRef.current) {
-        startTimeRef.current = timestamp;
-      }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       sparksRef.current = sparksRef.current.filter((spark) => {
@@ -107,15 +102,15 @@ export function GlobalClickSpark({
         return true;
       });
 
-      animationId = requestAnimationFrame(draw);
-    };
-
-    animationId = requestAnimationFrame(draw);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
-  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale]);
+      if (sparksRef.current.length > 0) {
+        animationIdRef.current = requestAnimationFrame(draw);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        animationIdRef.current = null;
+      }
+    },
+    [duration, easeFunc, extraScale, sparkColor, sparkRadius, sparkSize]
+  );
 
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
@@ -131,14 +126,22 @@ export function GlobalClickSpark({
       }));
 
       sparksRef.current.push(...newSparks);
+
+      if (animationIdRef.current === null) {
+        animationIdRef.current = requestAnimationFrame(draw);
+      }
     };
 
     window.addEventListener("click", handleGlobalClick, { capture: true });
 
     return () => {
       window.removeEventListener("click", handleGlobalClick, { capture: true });
+      if (animationIdRef.current !== null) {
+        cancelAnimationFrame(animationIdRef.current);
+        animationIdRef.current = null;
+      }
     };
-  }, [sparkCount]);
+  }, [draw, sparkCount]);
 
   return (
     <canvas

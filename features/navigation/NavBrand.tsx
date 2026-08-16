@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { navCopy } from "@/content";
 import { GlitchText } from "@/shared/ui/GlitchText";

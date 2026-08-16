@@ -105,7 +105,9 @@ function DockItem({
             : "border-white/10 bg-white/[0.04] text-text-primary/70 hover:border-white/25 hover:bg-white/[0.08] hover:text-text-primary"
         }`}
       >
-        <Icon className="size-4 shrink-0 transition-transform duration-200" />
+        <span aria-hidden="true">
+          <Icon className="size-4 shrink-0 transition-transform duration-200" />
+        </span>
       </motion.a>
 
       {/* Active Dot Indicator */}
@@ -131,7 +133,7 @@ export function MobileDock() {
       className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-4 min-[1100px]:hidden"
     >
       <motion.div
-        onMouseMove={(e) => mouseX.set(e.pageX)}
+        onMouseMove={(e) => mouseX.set(e.clientX)}
         onMouseLeave={() => mouseX.set(Infinity)}
         onTouchMove={(e) => {
           if (e.touches[0]) {
