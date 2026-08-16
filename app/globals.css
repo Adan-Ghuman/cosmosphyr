@@ -202,47 +202,89 @@
 
   .nav-link {
     position: relative;
-    isolation: isolate;
-  }
-
-  .nav-link-aura {
-    position: absolute;
-    inset: -0.4rem -0.85rem;
-    z-index: -1;
-    border-radius: 9999px;
-    background-image: var(--nav-link-aura);
-    opacity: 0;
-    transform: scale(0.85);
-    transition:
-      opacity 220ms ease,
-      transform 220ms ease;
-    pointer-events: none;
+    color: var(--color-text-primary);
+    opacity: 0.75;
+    transition: opacity 200ms ease, color 200ms ease;
   }
 
   .nav-link:hover,
   .nav-link:focus-visible {
-    color: var(--color-accent-ice);
+    opacity: 1;
+    color: var(--color-text-primary);
   }
 
   .nav-link[aria-current="true"] {
-    color: var(--color-accent-ice);
-    text-shadow: 0 0 18px rgba(142, 191, 212, 0.45);
+    opacity: 1;
+    color: var(--color-text-primary);
   }
 
-  .nav-link[aria-current="true"] .nav-link-aura {
-    opacity: 1;
-    transform: scale(1);
+  /* Glitch Text Micro-interaction */
+  .glitch-text:hover .glitch-layer,
+  .group:hover .glitch-text .glitch-layer {
+    opacity: 0.8;
+  }
+
+  .glitch-text:hover .glitch-layer-1,
+  .group:hover .glitch-text .glitch-layer-1 {
+    animation: glitch-anim-1 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  }
+
+  .glitch-text:hover .glitch-layer-2,
+  .group:hover .glitch-text .glitch-layer-2 {
+    animation: glitch-anim-2 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+  }
+
+  @keyframes glitch-anim-1 {
+    0% {
+      clip-path: inset(20% 0 40% 0);
+      transform: translate(-2px, -1px);
+    }
+    25% {
+      clip-path: inset(60% 0 10% 0);
+      transform: translate(2px, 1px);
+    }
+    50% {
+      clip-path: inset(30% 0 50% 0);
+      transform: translate(-1px, 2px);
+    }
+    75% {
+      clip-path: inset(80% 0 5% 0);
+      transform: translate(2px, -1px);
+    }
+    100% {
+      clip-path: inset(10% 0 70% 0);
+      transform: translate(-2px, 1px);
+    }
+  }
+
+  @keyframes glitch-anim-2 {
+    0% {
+      clip-path: inset(10% 0 60% 0);
+      transform: translate(2px, 1px);
+    }
+    25% {
+      clip-path: inset(70% 0 15% 0);
+      transform: translate(-2px, -1px);
+    }
+    50% {
+      clip-path: inset(40% 0 30% 0);
+      transform: translate(1px, -2px);
+    }
+    75% {
+      clip-path: inset(50% 0 20% 0);
+      transform: translate(-1px, 2px);
+    }
+    100% {
+      clip-path: inset(20% 0 50% 0);
+      transform: translate(2px, -1px);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .nav-link,
-    .nav-link-aura,
-    .cta-button {
-      transition: none;
-    }
-
-    .nav-link[aria-current="true"] {
-      text-shadow: none;
+    .glitch-layer {
+      animation: none !important;
+      transition: none !important;
     }
   }
 }

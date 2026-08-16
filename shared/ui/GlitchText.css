@@ -1,0 +1,117 @@
+.glitch-text-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.glitch-text-main {
+  position: relative;
+  z-index: 2;
+  transition: color 0.2s ease;
+}
+
+.glitch-copy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.glitch-text-wrapper:hover .glitch-copy,
+.glitch-text-wrapper.is-glitching .glitch-copy,
+.group:hover .glitch-text-wrapper .glitch-copy {
+  opacity: 1;
+}
+
+.glitch-text-wrapper:hover .glitch-copy-1,
+.glitch-text-wrapper.is-glitching .glitch-copy-1,
+.group:hover .glitch-text-wrapper .glitch-copy-1 {
+  color: var(--color-accent-ice, #8ebfd4);
+  left: -1px;
+  text-shadow: -1px 0 var(--color-accent-ice, #8ebfd4);
+  animation: glitch-anim-1 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+
+.glitch-text-wrapper:hover .glitch-copy-2,
+.glitch-text-wrapper.is-glitching .glitch-copy-2,
+.group:hover .glitch-text-wrapper .glitch-copy-2 {
+  color: var(--color-text-primary, #e6e8ec);
+  left: 1px;
+  text-shadow: 1px 0 rgba(142, 191, 212, 0.7);
+  animation: glitch-anim-2 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+}
+
+@keyframes glitch-anim-1 {
+  0%, 72%, 100% {
+    opacity: 0;
+    clip-path: inset(0 0 0 0);
+    transform: translate(0, 0);
+  }
+  74% {
+    opacity: 0.9;
+    clip-path: inset(25% 0 50% 0);
+    transform: translate(-2px, -1px);
+  }
+  78% {
+    opacity: 0.95;
+    clip-path: inset(60% 0 15% 0);
+    transform: translate(2px, 1px);
+  }
+  82% {
+    opacity: 0.85;
+    clip-path: inset(10% 0 70% 0);
+    transform: translate(-1px, 2px);
+  }
+  88% {
+    opacity: 0.9;
+    clip-path: inset(45% 0 25% 0);
+    transform: translate(1px, -1px);
+  }
+  92% {
+    opacity: 0.6;
+    clip-path: inset(80% 0 5% 0);
+    transform: translate(-1px, 0);
+  }
+}
+
+@keyframes glitch-anim-2 {
+  0%, 72%, 100% {
+    opacity: 0;
+    clip-path: inset(0 0 0 0);
+    transform: translate(0, 0);
+  }
+  74% {
+    opacity: 0.85;
+    clip-path: inset(15% 0 65% 0);
+    transform: translate(2px, 1px);
+  }
+  78% {
+    opacity: 0.9;
+    clip-path: inset(40% 0 35% 0);
+    transform: translate(-2px, -1px);
+  }
+  82% {
+    opacity: 0.95;
+    clip-path: inset(70% 0 10% 0);
+    transform: translate(1px, -2px);
+  }
+  88% {
+    opacity: 0.85;
+    clip-path: inset(20% 0 55% 0);
+    transform: translate(-1px, 1px);
+  }
+  92% {
+    opacity: 0.5;
+    clip-path: inset(5% 0 80% 0);
+    transform: translate(1px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glitch-copy {
+    display: none !important;
+  }
+}
