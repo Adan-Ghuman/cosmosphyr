@@ -50,3 +50,10 @@ AGENTS.md
 CLAUDE.md
 Agents.md
 claude.md
+
+# IDE & local configs
+.vscode/
+components.json
+opencode.json
+Ideas/
+ideas/

@@ -1,6 +1,5 @@
 "use client";
 
-import { useConvergence } from "@/shared/motion";
 import gsap from "gsap";
 import {
   useCallback,
@@ -14,8 +13,6 @@ import { getIgnitionSeen, setIgnitionSeen } from "./useIgnitionGate";
 
 type Phase = "checking" | "play" | "done";
 
-const CONVERGE_DURATION = 1.65;
-const CONVERGE_STAGGER = 0.1;
 const EXIT_DURATION = 0.35;
 const REDUCED_EXIT_DURATION = 0.25;
 
@@ -44,7 +41,6 @@ export function Splash() {
   const leftRef = useRef<SVGGElement>(null);
   const rightRef = useRef<SVGGElement>(null);
   const dismissedRef = useRef(false);
-  const targets = useRef([leftRef, rightRef]).current;
 
   const dismiss = useCallback((reduced: boolean) => {
     if (dismissedRef.current) return;
@@ -108,14 +104,15 @@ export function Splash() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [phase, dismiss]);
 
-  useConvergence(targets, {
-    enabled: phase === "play" && marksReady,
-    duration: CONVERGE_DURATION,
-    stagger: CONVERGE_STAGGER,
-    onComplete: () => {
+  useEffect(() => {
+    if (phase !== "play" || !marksReady) return;
+
+    const timer = setTimeout(() => {
       dismiss(prefersReducedMotion());
-    },
-  });
+    }, prefersReducedMotion() ? 500 : 1500);
+
+    return () => clearTimeout(timer);
+  }, [phase, marksReady, dismiss]);
 
   if (phase === "checking" || phase === "done") {
     return null;

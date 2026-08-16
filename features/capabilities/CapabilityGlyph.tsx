@@ -1,10 +1,4 @@
-"use client";
-
 import type { CapabilityIcon } from "@/content";
-import { useOrbit } from "@/shared/motion";
-import { useRef } from "react";
-
-const ORBIT_DURATION = 56;
 
 type CapabilityGlyphProps = {
   icon: CapabilityIcon;
@@ -83,13 +77,6 @@ function Pictogram({ icon }: CapabilityGlyphProps) {
 }
 
 export function CapabilityGlyph({ icon }: CapabilityGlyphProps) {
-  const orbitRef = useRef<HTMLSpanElement>(null);
-
-  useOrbit(orbitRef, {
-    amount: 360,
-    duration: ORBIT_DURATION,
-  });
-
   return (
     <span
       aria-hidden="true"
@@ -122,17 +109,6 @@ export function CapabilityGlyph({ icon }: CapabilityGlyphProps) {
         />
         <Pictogram icon={icon} />
       </svg>
-      <span ref={orbitRef} className="absolute inset-0">
-        <svg
-          viewBox="0 0 64 64"
-          width="100%"
-          height="100%"
-          focusable="false"
-          className="overflow-visible"
-        >
-          <circle cx="32" cy="8" r="1.6" fill="currentColor" />
-        </svg>
-      </span>
     </span>
   );
 }

@@ -1,21 +1,6 @@
-"use client";
-
-import { useOrbit } from "@/shared/motion";
-import { useRef } from "react";
-
-const ORBIT_DURATION = 56;
-
 export function OrbitAccent() {
-  const orbitRef = useRef<HTMLSpanElement>(null);
-
-  useOrbit(orbitRef, {
-    amount: 360,
-    duration: ORBIT_DURATION,
-  });
-
   return (
     <span
-      ref={orbitRef}
       aria-hidden="true"
       className="inline-flex size-(--size-orbit-accent) text-accent-ice"
     >

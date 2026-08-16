@@ -51,13 +51,9 @@ export function NavLinks({
                 <>
                   <span aria-hidden="true" className="nav-link-aura" />
                   <span className="relative z-10">{link.label}</span>
-                  <span aria-hidden="true" className="nav-link-horizon" />
                 </>
               ) : (
-                <>
-                  <span className="relative z-10">{link.label}</span>
-                  <span aria-hidden="true" className="nav-link-mobile-orbit" />
-                </>
+                <span className="relative z-10">{link.label}</span>
               )}
             </a>
           </li>

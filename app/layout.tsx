@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import Background from "@/components/background/Background";
 import "./globals.css";
 const bodyFace = Geist({
   variable: "--font-body-face",
@@ -21,8 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${bodyFace.variable} h-full antialiased`}>
-      <body className="min-h-full bg-transparent font-body text-text-primary">
-        <Background />
+      <body className="min-h-full bg-background font-body text-text-primary">
         <div className="relative z-0">
           {children}
         </div>
