@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { GalaxyBackground } from "@/shared/backgrounds/GalaxyBackground";
 import { GlobalClickSpark } from "@/shared/ui/GlobalClickSpark";
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${bodyFace.variable} h-full antialiased`}>
       <body className="min-h-full bg-background font-body text-text-primary">
+        <GalaxyBackground />
         <GlobalClickSpark
           sparkColor="#8ebfd4"
           sparkSize={12}
@@ -35,3 +37,4 @@ export default function RootLayout({
     </html>
   );
 }
+

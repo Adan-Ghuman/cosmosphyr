@@ -1,15 +1,33 @@
+"use client";
+
+import RotatingText from "@/components/RotatingText";
 import { siteCopy } from "@/content";
 
 export function HeroContent() {
   const { headline, subhead, ctaLabel, ctaHref } = siteCopy.hero;
 
   return (
-    <div className="mx-auto flex max-w-xl flex-col items-center text-center gap-(--space-hero-stack-gap)">
+    <div className="mx-auto flex max-w-2xl flex-col items-center text-center gap-(--space-hero-stack-gap)">
       <h1
         data-hero-reveal
-        className="font-display text-4xl leading-tight tracking-tight text-text-primary md:text-6xl"
+        className="flex flex-col items-center font-display text-4xl leading-tight tracking-tight text-text-primary md:text-6xl"
       >
-        {headline}
+        <span>{headline}</span>
+        <span className="mt-2 flex items-center justify-center text-2xl font-normal text-accent-ice md:text-3xl">
+          <RotatingText
+            texts={[
+              "Engineering Serious AI",
+              "Architecting Cloud Systems",
+              "Crafting High-Scale Web & Mobile",
+              "Moving Ideas to Production",
+            ]}
+            mainClassName="inline-flex justify-center text-center text-accent-ice"
+            splitLevelClassName="inline-flex"
+            elementLevelClassName="text-accent-ice"
+            rotationInterval={3400}
+            staggerDuration={0.015}
+          />
+        </span>
       </h1>
       <span
         data-hero-reveal
@@ -25,3 +43,4 @@ export function HeroContent() {
     </div>
   );
 }
+
