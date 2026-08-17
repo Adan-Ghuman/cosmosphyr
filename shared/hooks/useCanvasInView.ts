@@ -4,20 +4,30 @@ import { useEffect, useState, type RefObject } from "react";
 
 export function useCanvasInView(
   targetRef: RefObject<HTMLElement | null>,
-  options: IntersectionObserverInit = { threshold: 0.05 }
+  options?: IntersectionObserverInit
 ): boolean {
-  const [isInView, setIsInView] = useState(true);
+  const [isInView, setIsInView] = useState(false);
+
+  const root = options?.root ?? null;
+  const rootMargin = options?.rootMargin ?? "120px";
+  const threshold = options?.threshold ?? 0.05;
 
   useEffect(() => {
     const el = targetRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setIsInView(true);
+      return;
+    }
 
-    const observer = new IntersectionObserver((entries) => {
-      const [entry] = entries;
-      if (entry) {
-        setIsInView(entry.isIntersecting);
-      }
-    }, options);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry) {
+          setIsInView(entry.isIntersecting);
+        }
+      },
+      { root, rootMargin, threshold }
+    );
 
     observer.observe(el);
 
@@ -27,7 +37,7 @@ export function useCanvasInView(
       } else if (el) {
         const rect = el.getBoundingClientRect();
         const inView =
-          rect.top < window.innerHeight && rect.bottom > 0;
+          rect.top < window.innerHeight + 120 && rect.bottom > -120;
         setIsInView(inView);
       }
     };
@@ -38,7 +48,7 @@ export function useCanvasInView(
       observer.disconnect();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [targetRef, options]);
+  }, [targetRef, root, rootMargin, threshold]);
 
   return isInView;
 }

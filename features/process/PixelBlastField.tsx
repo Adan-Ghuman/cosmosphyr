@@ -61,31 +61,51 @@ export function PixelBlastField() {
 
     let lastMoveTime = 0;
     const handleMouseMove = (e: MouseEvent) => {
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+      ) {
+        return;
+      }
       const now = performance.now();
       if (now - lastMoveTime < 45) return; // Throttled burst spawn
       lastMoveTime = now;
 
-      const rect = container.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       spawnBlast(x, y, 6);
     };
 
     const handleClick = (e: MouseEvent) => {
+      if (!container) return;
       const rect = container.getBoundingClientRect();
+      if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+      ) {
+        return;
+      }
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       spawnBlast(x, y, 28);
     };
 
-    container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("click", handleClick);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("click", handleClick);
 
     // Periodic ambient digital pixel twitches
     let timer = 0;
     function render() {
-      animationFrameId = requestAnimationFrame(render);
-      if (!isInView || document.hidden || !ctx) return;
+      if (!isInView || document.hidden || !ctx) {
+        animationFrameId = 0;
+        return;
+      }
 
       timer++;
       if (timer % 35 === 0 && particles.length < 50) {
@@ -116,17 +136,23 @@ export function PixelBlastField() {
       }
 
       ctx.globalAlpha = 1;
+      animationFrameId = requestAnimationFrame(render);
     }
 
-    render();
+    if (isInView) {
+      animationFrameId = requestAnimationFrame(render);
+    }
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
       window.removeEventListener("resize", handleResize);
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("click", handleClick);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("click", handleClick);
     };
   }, [isInView]);
+
 
   return (
     <div
