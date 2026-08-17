@@ -14,7 +14,18 @@ export const siteCopy: SiteCopy = {
     sphyr: "SPHYR",
     wordmark: "Cosmosphyr",
     subtext: "Ideas becoming technology.",
+    story: {
+      cosmosDescription:
+        "The boundless universe of abstract ideas, exploration, and frontier innovation.",
+      sphyrDescription:
+        "The engineered sphere: hardened architecture, reliable software, and precision execution.",
+      narrative:
+        "We unite the limitless curiosity of the Cosmos with the disciplined craft of the Sphyr — engineering ideas across the horizon into resilient, production-hardened technology.",
+      tagline: "From the cosmic void to concrete reality.",
+    },
+
   },
+
   finalCta: {
     headline: "The next horizon starts with a clear brief.",
     subtext:

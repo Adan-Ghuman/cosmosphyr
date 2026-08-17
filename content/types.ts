@@ -48,7 +48,14 @@ export type SiteCopy = {
     sphyr: string;
     wordmark: string;
     subtext: string;
+    story?: {
+      cosmosDescription: string;
+      sphyrDescription: string;
+      narrative: string;
+      tagline: string;
+    };
   };
+
   finalCta: {
     headline: string;
     subtext: string;
