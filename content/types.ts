@@ -28,6 +28,7 @@ export type Capability = {
     | "Web & Mobile"
     | "Cloud & Automation";
   description: string;
+  tags?: string[];
 };
 
 export type ProcessStep = {
