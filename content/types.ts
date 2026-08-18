@@ -61,7 +61,9 @@ export type SiteCopy = {
   };
 
   finalCta: {
+    eyebrow?: string;
     headline: string;
+    rotatingPhrases?: string[];
     subtext: string;
     ctaLabel: string;
     ctaHref: string;

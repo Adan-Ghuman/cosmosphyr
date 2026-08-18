@@ -9,7 +9,6 @@ export function Footer() {
     <Section
       id="contact"
       ariaLabel="Contact"
-      className="border-t border-glow/30"
     >
       <div className="mx-auto max-w-5xl px-6">
         <h2 className="font-display text-2xl tracking-tight md:text-3xl">

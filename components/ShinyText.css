@@ -1,0 +1,35 @@
+.shiny-text {
+  color: rgba(230, 232, 236, 0.85);
+  background: linear-gradient(
+    120deg,
+    rgba(230, 232, 236, 0.72) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(230, 232, 236, 0.72) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  display: inline-block;
+  animation: shiny-text-shine 4.5s linear infinite;
+}
+
+@keyframes shiny-text-shine {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.shiny-text.disabled {
+  animation: none;
+  background: none;
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shiny-text {
+    animation: none;
+  }
+}

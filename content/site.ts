@@ -27,7 +27,14 @@ export const siteCopy: SiteCopy = {
   },
 
   finalCta: {
+    eyebrow: "08 // The Next Horizon",
     headline: "The next horizon starts with a clear brief.",
+    rotatingPhrases: [
+      "Build Across the Horizon",
+      "Ideas Engineered into Reality",
+      "From Concept to Production",
+      "Architect What Comes Next",
+    ],
     subtext:
       "Tell us what you are building. We will respond with a practical path forward.",
     ctaLabel: "Contact Cosmosphyr",
