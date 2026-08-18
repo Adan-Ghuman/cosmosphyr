@@ -34,9 +34,6 @@ export function Capabilities() {
                   What We Build
                 </h2>
               </div>
-              <p className="max-w-xs text-xs text-text-primary/70 sm:text-right md:max-w-sm md:text-[13px]">
-                Engineered systems moving from concept across the horizon into production.
-              </p>
             </div>
 
             {/* 2x2 Capabilities Grid */}
