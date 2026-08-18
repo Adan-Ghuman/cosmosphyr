@@ -35,7 +35,6 @@ export const siteCopy: SiteCopy = {
   },
   contact: {
     heading: "Contact",
-    intro: "Share a concise brief. We will follow up with a practical next step.",
     submitLabel: "Send message",
     deliveryPendingHelper:
       "Form delivery is not connected yet. Fields are ready; sending comes later.",
@@ -43,8 +42,6 @@ export const siteCopy: SiteCopy = {
   selectedWork: {
     eyebrow: "Selected Work",
     headline: "Selected Work",
-    intro:
-      "Public products and anonymized NDA systems. Outcomes and demo URLs remain draft until verified.",
     demoLabel: "Go to website",
   },
 };

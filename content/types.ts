@@ -35,6 +35,9 @@ export type ProcessStep = {
   id: string;
   label: "Curiosity" | "Exploration" | "Engineering" | "Impact";
   description: string;
+  phase?: string;
+  tagline?: string;
+  deliverables?: string[];
 };
 
 export type SiteCopy = {
@@ -65,14 +68,12 @@ export type SiteCopy = {
   };
   contact: {
     heading: string;
-    intro: string;
     submitLabel: string;
     deliveryPendingHelper: string;
   };
   selectedWork: {
     eyebrow: string;
     headline: string;
-    intro: string;
     demoLabel: string;
   };
   isDraft: boolean;

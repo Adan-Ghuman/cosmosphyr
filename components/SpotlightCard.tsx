@@ -67,4 +67,7 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
   );
 };
 
+export { SpotlightCard };
 export default SpotlightCard;
+
+
