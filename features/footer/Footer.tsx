@@ -3,7 +3,7 @@ import { Section } from "@/shared/ui/Section";
 import { ContactForm } from "./ContactForm";
 
 export function Footer() {
-  const { heading, intro } = siteCopy.contact;
+  const { heading } = siteCopy.contact;
 
   return (
     <Section
@@ -15,7 +15,6 @@ export function Footer() {
         <h2 className="font-display text-2xl tracking-tight md:text-3xl">
           {heading}
         </h2>
-        <p className="mt-3 max-w-xl text-text-primary/80">{intro}</p>
         <ContactForm />
         <p className="mt-12 text-sm text-text-primary/50">Cosmosphyr</p>
       </div>

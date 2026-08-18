@@ -4,7 +4,7 @@ import AccordionGallery from "@/components/AccordionGallery";
 import { SelectedWorkReveal } from "./SelectedWorkReveal";
 
 export function SelectedWork() {
-  const { headline, intro } = siteCopy.selectedWork;
+  const { headline } = siteCopy.selectedWork;
 
   const items = projects.map((project) => ({
     image: `/projects/${project.id}.jpg`,
