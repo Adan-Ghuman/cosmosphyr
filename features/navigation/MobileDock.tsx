@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -67,10 +67,28 @@ function DockItem({
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const centerXRef = useRef(0);
+
+  const updateBounds = () => {
+    if (ref.current) {
+      const bounds = ref.current.getBoundingClientRect();
+      centerXRef.current = bounds.x + bounds.width / 2;
+    }
+  };
+
+  useEffect(() => {
+    updateBounds();
+    window.addEventListener("resize", updateBounds, { passive: true });
+    window.addEventListener("orientationchange", updateBounds, { passive: true });
+    return () => {
+      window.removeEventListener("resize", updateBounds);
+      window.removeEventListener("orientationchange", updateBounds);
+    };
+  }, []);
 
   const distance = useTransform(mouseX, (val) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-    return val - bounds.x - bounds.width / 2;
+    if (val === Infinity || centerXRef.current === 0) return 999;
+    return val - centerXRef.current;
   });
 
   const widthSync = useTransform(distance, [-120, 0, 120], [38, 52, 38]);
@@ -95,7 +113,10 @@ function DockItem({
         ref={ref}
         href={href}
         style={{ width, height: width }}
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={() => {
+          updateBounds();
+          setIsHovered(true);
+        }}
         onMouseLeave={() => setIsHovered(false)}
         aria-label={label}
         aria-current={isActive ? "true" : undefined}

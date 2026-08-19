@@ -22,8 +22,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${bodyFace.variable} h-full antialiased`}>
-      <body className="min-h-full bg-background font-body text-text-primary">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${bodyFace.variable} h-full antialiased`}
+    >
+      <body
+        suppressHydrationWarning
+        className="min-h-full bg-background font-body text-text-primary"
+      >
         <GalaxyBackground />
         <GlobalClickSpark
           sparkColor="#8ebfd4"

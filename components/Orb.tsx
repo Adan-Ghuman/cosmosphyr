@@ -210,9 +210,19 @@ export default function Orb({
     const container = ctnDom.current;
     if (!container) return;
 
+    const getDpr = () => {
+      if (typeof window === "undefined") return 1;
+      const dpr = window.devicePixelRatio || 1;
+      return window.innerWidth < 768 ? Math.min(dpr, 1.5) : Math.min(dpr, 2.0);
+    };
+
     let renderer: Renderer | null = null;
     try {
-      renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
+      renderer = new Renderer({
+        alpha: true,
+        premultipliedAlpha: false,
+        dpr: getDpr(),
+      });
     } catch {
       return;
     }
@@ -245,12 +255,12 @@ export default function Orb({
 
     function resize() {
       if (!container || !renderer) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const rect = container.getBoundingClientRect();
       const width = Math.floor(rect.width);
       const height = Math.floor(rect.height);
       if (width === 0 || height === 0) return;
-      renderer.setSize(width * dpr, height * dpr);
+      renderer.dpr = getDpr();
+      renderer.setSize(width, height);
       gl.canvas.style.width = width + "px";
       gl.canvas.style.height = height + "px";
       program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height);
@@ -260,6 +270,52 @@ export default function Orb({
     resizeObserver.observe(container);
     window.addEventListener("resize", resize);
     resize();
+
+    let rafId: number | null = null;
+    let isVisible = false;
+
+    const startLoop = () => {
+      if (rafId === null && isVisible && !document.hidden) {
+        rafId = requestAnimationFrame(update);
+      }
+    };
+
+    const stopLoop = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    };
+
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]) {
+          isVisible = entries[0].isIntersecting;
+          if (isVisible) {
+            startLoop();
+          } else {
+            stopLoop();
+          }
+        }
+      },
+      { threshold: 0, rootMargin: "100px" }
+    );
+    intersectionObserver.observe(container);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopLoop();
+      } else if (container) {
+        const rect = container.getBoundingClientRect();
+        isVisible = rect.top < window.innerHeight + 100 && rect.bottom > -100;
+        if (isVisible) {
+          startLoop();
+        } else {
+          stopLoop();
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     const mediaQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     let reducedMotion = mediaQuery?.matches ?? false;
@@ -301,9 +357,12 @@ export default function Orb({
     container.addEventListener("mousemove", handleMouseMove);
     container.addEventListener("mouseleave", handleMouseLeave);
 
-    let rafId: number;
     const update = (t: number) => {
-      rafId = requestAnimationFrame(update);
+      if (!isVisible || document.hidden) {
+        rafId = null;
+        return;
+      }
+
       const dt = Math.min((t - lastTime) * 0.001, 0.1);
       lastTime = t;
       
@@ -331,12 +390,14 @@ export default function Orb({
       }
 
       renderer?.render({ scene: mesh });
+      rafId = requestAnimationFrame(update);
     };
-    rafId = requestAnimationFrame(update);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      stopLoop();
       resizeObserver.disconnect();
+      intersectionObserver.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       mediaQuery?.removeEventListener("change", handleMotionChange);
       window.removeEventListener("resize", resize);
       container.removeEventListener("mousemove", handleMouseMove);

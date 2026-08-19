@@ -14,7 +14,11 @@ export function CapabilitiesField() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden"
     >
-      {isInView && (
+      <div
+        className={`h-full w-full transition-opacity duration-700 ${
+          isInView ? "opacity-100" : "opacity-0"
+        }`}
+      >
         <DotField
           dotRadius={1.5}
           dotSpacing={14}
@@ -29,7 +33,7 @@ export function CapabilitiesField() {
           gradientTo="rgba(174, 190, 210, 0.2)"
           glowColor="var(--color-background)"
         />
-      )}
+      </div>
       {/* Subtle radial center ambient mask */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_65%_at_50%_50%,rgba(5,5,7,0.55),transparent_90%)]" />
     </div>

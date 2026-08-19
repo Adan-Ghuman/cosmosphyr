@@ -71,7 +71,11 @@ const DotField = memo(({
     if (!canvas || !canvas.parentElement) return;
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const getDpr = () => {
+      if (typeof window === 'undefined') return 1;
+      const dpr = window.devicePixelRatio || 1;
+      return window.innerWidth < 768 ? Math.min(dpr, 1.5) : Math.min(dpr, 2.0);
+    };
 
     function doResize() {
       if (!canvas || !canvas.parentElement) return;
@@ -80,6 +84,7 @@ const DotField = memo(({
       const h = parent.clientHeight || parent.getBoundingClientRect().height;
       if (w === 0 || h === 0) return;
 
+      const dpr = getDpr();
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
@@ -113,26 +118,73 @@ const DotField = memo(({
     function onMouseMove(e: MouseEvent) {
       if (!canvas || !canvas.parentElement) return;
       const rect = canvas.parentElement.getBoundingClientRect();
-      mouseRef.current.x = e.clientX - rect.left;
-      mouseRef.current.y = e.clientY - rect.top;
-    }
-
-    function updateMouseSpeed() {
+      const newX = e.clientX - rect.left;
+      const newY = e.clientY - rect.top;
       const m = mouseRef.current;
-      const dx = m.prevX - m.x;
-      const dy = m.prevY - m.y;
+      const dx = m.prevX - newX;
+      const dy = m.prevY - newY;
       const dist = Math.sqrt(dx * dx + dy * dy);
       m.speed += (dist - m.speed) * 0.5;
-      if (m.speed < 0.001) m.speed = 0;
-      m.prevX = m.x;
-      m.prevY = m.y;
+      m.prevX = newX;
+      m.prevY = newY;
+      m.x = newX;
+      m.y = newY;
     }
 
-    const speedInterval = setInterval(updateMouseSpeed, 20);
+    let isVisible = false;
+
+    const startLoop = () => {
+      if (rafRef.current === null && isVisible && !document.hidden) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    const stopLoop = () => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+
+    const parentEl = canvas.parentElement;
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]) {
+          isVisible = entries[0].isIntersecting;
+          if (isVisible) {
+            startLoop();
+          } else {
+            stopLoop();
+          }
+        }
+      },
+      { threshold: 0, rootMargin: '100px' }
+    );
+    if (parentEl) intersectionObserver.observe(parentEl);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopLoop();
+      } else if (parentEl) {
+        const rect = parentEl.getBoundingClientRect();
+        isVisible = rect.top < window.innerHeight + 100 && rect.bottom > -100;
+        if (isVisible) {
+          startLoop();
+        } else {
+          stopLoop();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     let frameCount = 0;
 
     function tick() {
+      if (!isVisible || document.hidden) {
+        rafRef.current = null;
+        return;
+      }
+
       frameCount++;
       const dots = dotsRef.current;
       const m = mouseRef.current;
@@ -140,6 +192,10 @@ const DotField = memo(({
       const p = propsRef.current;
       const len = dots.length;
       const t = frameCount * 0.02;
+
+      // Natural speed decay in tick loop
+      m.speed *= 0.95;
+      if (m.speed < 0.001) m.speed = 0;
 
       const targetEngagement = Math.min(m.speed / 5, 1);
       engagement.current += (targetEngagement - engagement.current) * 0.06;
@@ -235,7 +291,6 @@ const DotField = memo(({
 
     window.addEventListener('resize', doResize);
     window.addEventListener('mousemove', onMouseMove, { passive: true });
-    rafRef.current = requestAnimationFrame(tick);
 
     rebuildRef.current = () => {
       const { w, h } = sizeRef.current;
@@ -243,8 +298,9 @@ const DotField = memo(({
     };
 
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      clearInterval(speedInterval);
+      stopLoop();
+      intersectionObserver.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       resizeObserver.disconnect();
       window.removeEventListener('resize', doResize);
       window.removeEventListener('mousemove', onMouseMove);
