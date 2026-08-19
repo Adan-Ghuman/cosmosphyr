@@ -37,7 +37,7 @@ uniform bool uTransparent;
 
 varying vec2 vUv;
 
-#define NUM_LAYER 4.0
+#define NUM_LAYER 3.0
 #define STAR_COLOR_CUTOFF 0.2
 #define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)
 #define PERIOD 3.0
@@ -216,9 +216,16 @@ export default function Galaxy({
   useEffect(() => {
     if (!ctnDom.current) return;
     const ctn = ctnDom.current;
+    const getDpr = () => {
+      if (typeof window === 'undefined') return 1;
+      const dpr = window.devicePixelRatio || 1;
+      return window.innerWidth < 768 ? Math.min(dpr, 1.5) : Math.min(dpr, 2.0);
+    };
+
     const renderer = new Renderer({
       alpha: transparent,
-      premultipliedAlpha: false
+      premultipliedAlpha: false,
+      dpr: getDpr()
     });
     const gl = renderer.gl;
 
@@ -233,8 +240,12 @@ export default function Galaxy({
     let program: Program;
 
     function resize() {
-      const scale = 1;
-      renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
+      if (!ctn || !renderer) return;
+      const w = ctn.offsetWidth;
+      const h = ctn.offsetHeight;
+      if (w === 0 || h === 0) return;
+      renderer.dpr = getDpr();
+      renderer.setSize(w, h);
       if (program) {
         program.uniforms.uResolution.value = new Color(
           gl.canvas.width,
@@ -277,10 +288,27 @@ export default function Galaxy({
     });
 
     const mesh = new Mesh(gl, { geometry, program });
-    let animateId: number;
+    let animateId: number | null = null;
+
+    const startLoop = () => {
+      if (animateId === null && !document.hidden) {
+        animateId = requestAnimationFrame(update);
+      }
+    };
+
+    const stopLoop = () => {
+      if (animateId !== null) {
+        cancelAnimationFrame(animateId);
+        animateId = null;
+      }
+    };
 
     function update(t: number) {
-      animateId = requestAnimationFrame(update);
+      if (document.hidden) {
+        animateId = null;
+        return;
+      }
+
       if (!disableAnimation) {
         program.uniforms.uTime.value = t * 0.001;
         program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0;
@@ -297,9 +325,19 @@ export default function Galaxy({
       program.uniforms.uMouseActiveFactor.value = smoothMouseActive.current;
 
       renderer.render({ scene: mesh });
+      animateId = requestAnimationFrame(update);
     }
-    animateId = requestAnimationFrame(update);
+    startLoop();
     ctn.appendChild(gl.canvas);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopLoop();
+      } else {
+        startLoop();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     function handleMouseMove(e: MouseEvent) {
       const rect = ctn.getBoundingClientRect();
@@ -320,8 +358,9 @@ export default function Galaxy({
     }
 
     return () => {
-      cancelAnimationFrame(animateId);
+      stopLoop();
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (mouseInteraction) {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseleave', handleMouseLeave);

@@ -331,13 +331,19 @@ export default function ParticleText({
       onActiveIndexChange?.(nextIdx);
     };
 
+    const getDpr = () => {
+      if (typeof window === "undefined") return 1;
+      const dpr = window.devicePixelRatio || 1;
+      return window.innerWidth < 768 ? Math.min(dpr, 1.5) : Math.min(dpr, 2.0);
+    };
+
     const handleResize = () => {
       const rect = container.getBoundingClientRect();
       width = Math.floor(rect.width);
       height = Math.floor(rect.height);
       if (width <= 0 || height <= 0) return;
 
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = getDpr();
       canvas.width = Math.max(1, Math.floor(width * dpr));
       canvas.height = Math.max(1, Math.floor(height * dpr));
       canvas.style.width = `${width}px`;
@@ -361,19 +367,62 @@ export default function ParticleText({
       logoLoaded = true;
     }
 
+    let isVisible = false;
+
+    const startLoop = () => {
+      if (animationFrame === null && isVisible && !document.hidden) {
+        animationFrame = requestAnimationFrame(render);
+      }
+    };
+
+    const stopLoop = () => {
+      if (animationFrame !== null) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+      }
+    };
+
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]) {
+          isVisible = entries[0].isIntersecting;
+          if (isVisible) {
+            startLoop();
+          } else {
+            stopLoop();
+          }
+        }
+      },
+      { threshold: 0, rootMargin: "100px" }
+    );
+    intersectionObserver.observe(container);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopLoop();
+      } else if (container) {
+        const rect = container.getBoundingClientRect();
+        isVisible = rect.top < window.innerHeight + 100 && rect.bottom > -100;
+        if (isVisible) {
+          startLoop();
+        } else {
+          stopLoop();
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     window.addEventListener("resize", handleResize);
     handleResize();
 
     // Render loop
     const render = (now: number) => {
-      ctx.clearRect(0, 0, width, height);
-
-      if (glow && !reducedMotion) {
-        ctx.shadowBlur = particleSize * 2.5;
-        ctx.shadowColor = highlightColor;
-      } else {
-        ctx.shadowBlur = 0;
+      if (!isVisible || document.hidden) {
+        animationFrame = null;
+        return;
       }
+
+      ctx.clearRect(0, 0, width, height);
 
       pointer.smoothX += (pointer.x - pointer.smoothX) * 0.15;
       pointer.smoothY += (pointer.y - pointer.smoothY) * 0.15;
@@ -523,8 +572,6 @@ export default function ParticleText({
       animationFrame = requestAnimationFrame(render);
     };
 
-    animationFrame = requestAnimationFrame(render);
-
     const handlePointerMove = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       pointer.x = e.clientX - rect.left;
@@ -540,7 +587,9 @@ export default function ParticleText({
     canvas.addEventListener("pointerleave", handlePointerLeave);
 
     return () => {
-      if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+      stopLoop();
+      intersectionObserver.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       mediaQuery?.removeEventListener("change", handleMotionChange);
       window.removeEventListener("resize", handleResize);
       canvas.removeEventListener("pointermove", handlePointerMove);

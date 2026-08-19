@@ -31,8 +31,8 @@ uniform vec2 uMouse;
 
 #define PI 3.1415926538
 
-const int u_line_count = 45;
-const float u_line_width = 10.0;
+const int u_line_count = 22;
+const float u_line_width = 12.0;
 const float u_line_blur = 12.0;
 
 
@@ -172,7 +172,10 @@ const Threads: React.FC<ThreadsProps> = ({
     const MAX_RENDER_DIM = 1920;
     function resize() {
       const { clientWidth, clientHeight } = container;
-      const baseDpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (clientWidth === 0 || clientHeight === 0) return;
+      const baseDpr = window.innerWidth < 768
+        ? Math.min(window.devicePixelRatio || 1, 1.5)
+        : Math.min(window.devicePixelRatio || 1, 2);
       const longestSide = Math.max(clientWidth, clientHeight) * baseDpr;
       const dpr = longestSide > MAX_RENDER_DIM ? (baseDpr * MAX_RENDER_DIM) / longestSide : baseDpr;
       renderer.dpr = dpr;
@@ -206,18 +209,56 @@ const Threads: React.FC<ThreadsProps> = ({
       window.addEventListener('mouseleave', handleMouseLeave);
     }
 
-    let isVisible = true;
+    let isVisible = false;
+
+    const startLoop = () => {
+      if (animationFrameId.current === 0 && isVisible && !document.hidden) {
+        animationFrameId.current = requestAnimationFrame(update);
+      }
+    };
+
+    const stopLoop = () => {
+      if (animationFrameId.current !== 0) {
+        cancelAnimationFrame(animationFrameId.current);
+        animationFrameId.current = 0;
+      }
+    };
+
     const intersectionObserver = new IntersectionObserver(
       entries => {
-        isVisible = entries[0].isIntersecting;
+        if (entries[0]) {
+          isVisible = entries[0].isIntersecting;
+          if (isVisible) {
+            startLoop();
+          } else {
+            stopLoop();
+          }
+        }
       },
-      { threshold: 0 }
+      { threshold: 0, rootMargin: '100px' }
     );
     intersectionObserver.observe(container);
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopLoop();
+      } else if (container) {
+        const rect = container.getBoundingClientRect();
+        isVisible = rect.top < window.innerHeight + 100 && rect.bottom > -100;
+        if (isVisible) {
+          startLoop();
+        } else {
+          stopLoop();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     function update(t: number) {
-      animationFrameId.current = requestAnimationFrame(update);
-      if (!isVisible || document.hidden) return;
+      if (!isVisible || document.hidden) {
+        animationFrameId.current = 0;
+        return;
+      }
 
       const { color, amplitude, distance, enableMouseInteraction } = propsRef.current;
 
@@ -238,13 +279,14 @@ const Threads: React.FC<ThreadsProps> = ({
       program.uniforms.iTime.value = t * 0.001;
 
       renderer.render({ scene: mesh });
+      animationFrameId.current = requestAnimationFrame(update);
     }
-    animationFrameId.current = requestAnimationFrame(update);
 
     return () => {
-      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+      stopLoop();
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('resize', resize);
       if (enableMouseInteraction) {
         window.removeEventListener('mousemove', handleMouseMove);

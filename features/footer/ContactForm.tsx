@@ -26,6 +26,7 @@ export function ContactForm() {
     <form
       className="mt-8 flex max-w-xl flex-col gap-(--space-form-gap)"
       noValidate
+      suppressHydrationWarning
       onSubmit={(event) => {
         event.preventDefault();
       }}
@@ -41,6 +42,7 @@ export function ContactForm() {
           autoComplete="name"
           required
           aria-required="true"
+          suppressHydrationWarning
           value={name}
           onChange={(event) => setName(event.target.value)}
           className={fieldClassName}
@@ -58,6 +60,7 @@ export function ContactForm() {
           autoComplete="email"
           required
           aria-required="true"
+          suppressHydrationWarning
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           className={fieldClassName}
@@ -73,6 +76,7 @@ export function ContactForm() {
           name="projectType"
           required
           aria-required="true"
+          suppressHydrationWarning
           value={projectType}
           onChange={(event) =>
             setProjectType(event.target.value as ProjectTypeOption | "")
@@ -100,6 +104,7 @@ export function ContactForm() {
           rows={5}
           required
           aria-required="true"
+          suppressHydrationWarning
           value={message}
           onChange={(event) => setMessage(event.target.value)}
           className={`${fieldClassName} min-h-32 resize-y`}

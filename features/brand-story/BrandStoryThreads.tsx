@@ -14,16 +14,18 @@ export function BrandStoryThreads() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
-      {isInView && (
-        <div className="h-full w-full opacity-90 mix-blend-screen transition-opacity duration-500">
-          <Threads
-            color={[0.7, 0.92, 1.0]}
-            amplitude={2.2}
-            distance={0.35}
-            enableMouseInteraction={true}
-          />
-        </div>
-      )}
+      <div
+        className={`h-full w-full mix-blend-screen transition-opacity duration-700 ${
+          isInView ? "opacity-90" : "opacity-0"
+        }`}
+      >
+        <Threads
+          color={[0.7, 0.92, 1.0]}
+          amplitude={2.2}
+          distance={0.35}
+          enableMouseInteraction={true}
+        />
+      </div>
     </div>
   );
 }
