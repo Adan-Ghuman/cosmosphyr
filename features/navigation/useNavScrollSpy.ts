@@ -22,17 +22,44 @@ export function useNavScrollSpy(hrefs: string[]): string | null {
 
     if (elements.length === 0) return;
 
-    const clearancePx = 72; // Standard nav clearance
+    const clearancePx = 80;
     const ratios = new Map<string, number>();
-    const tops = new Map<string, number>();
+
+    const checkScrollEdges = () => {
+      if (window.scrollY < 100) {
+        setActiveHref(elements[0].href);
+        return;
+      }
+
+      const isAtBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 100;
+
+      if (isAtBottom) {
+        setActiveHref(elements[elements.length - 1].href);
+      }
+    };
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (window.scrollY < 100) {
+          setActiveHref(elements[0].href);
+          return;
+        }
+
+        const isAtBottom =
+          window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight - 100;
+
+        if (isAtBottom) {
+          setActiveHref(elements[elements.length - 1].href);
+          return;
+        }
+
         for (const entry of entries) {
           const match = elements.find((item) => item.el === entry.target);
           if (!match) continue;
           ratios.set(match.href, entry.isIntersecting ? entry.intersectionRatio : 0);
-          tops.set(match.href, entry.boundingClientRect.top);
         }
 
         let bestHref: string | null = null;
@@ -47,33 +74,22 @@ export function useNavScrollSpy(hrefs: string[]): string | null {
 
         if (bestHref) {
           setActiveHref(bestHref);
-          return;
         }
-
-        let fallback = elements[0]?.href ?? null;
-        let minTop = Number.POSITIVE_INFINITY;
-        for (const { href } of elements) {
-          const topVal = tops.get(href);
-          if (topVal !== undefined) {
-            const diff = Math.abs(topVal - clearancePx);
-            if (diff < minTop) {
-              minTop = diff;
-              fallback = href;
-            }
-          }
-        }
-        if (fallback) setActiveHref(fallback);
       },
       {
         root: null,
-        threshold: [0.1, 0.25, 0.5, 0.75],
-        rootMargin: `-${clearancePx}px 0px -45% 0px`,
+        threshold: [0.05, 0.2, 0.4, 0.6, 0.8],
+        rootMargin: `-${clearancePx}px 0px -40% 0px`,
       },
     );
 
     for (const { el } of elements) observer.observe(el);
+    window.addEventListener("scroll", checkScrollEdges, { passive: true });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", checkScrollEdges);
+    };
   }, [hrefs]);
 
   return activeHref;
