@@ -21,7 +21,6 @@ export const navCopy: NavCopy = {
     { label: "Brand", href: "#cosmosphyr" },
     { label: "Capabilities", href: "#capabilities" },
     { label: "Work", href: "#selected-work" },
-    { label: "Proof", href: "#proof" },
     { label: "Process", href: "#process" },
     { label: "Next", href: "#next-horizon" },
   ],
