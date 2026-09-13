@@ -5,7 +5,7 @@ type MetaLabelProps = {
   className?: string;
 };
 
-/** Uppercase accent label for field/meta rows (Proof, case-study fields). */
+/** Uppercase accent label for field/meta rows (case-study fields). */
 export function MetaLabel({ children, className = "" }: MetaLabelProps) {
   return (
     <p

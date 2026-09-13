@@ -2,7 +2,6 @@ import { capabilities } from "./capabilities";
 import { navCopy } from "./nav";
 import { processSteps } from "./process";
 import { projects } from "./projects";
-import { proofItems } from "./proof";
 import { siteCopy } from "./site";
 
 export type {
@@ -11,7 +10,6 @@ export type {
   ProcessStep,
   Project,
   ProjectTypeOption,
-  ProofItem,
   SiteCopy,
 } from "./types";
 
@@ -22,7 +20,6 @@ export {
   navCopy,
   processSteps,
   projects,
-  proofItems,
   siteCopy,
 };
 export { projectTypeOptions } from "./types";

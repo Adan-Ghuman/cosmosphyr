@@ -8,15 +8,6 @@ export type Project = {
   isNDA: boolean;
   demoUrl?: string;
 };
-
-export type ProofItem = {
-  id: string;
-  label: string;
-  value: string;
-  type: "fact" | "capability" | "delivery";
-  sourceProjectId: string;
-};
-
 export type CapabilityIcon = "ai" | "software" | "web-mobile" | "cloud";
 
 export type Capability = {
