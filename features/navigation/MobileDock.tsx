@@ -1,173 +1,132 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { navCopy } from "@/content";
 import { useActiveNavHref } from "./NavScrollSpyContext";
+import {
+  Home,
+  Info,
+  Layers,
+  Briefcase,
+  Workflow,
+  Sparkles,
+  type LucideIcon,
+} from "lucide-react";
 
-const SECTION_ICONS: Record<string, (props: { className?: string }) => React.ReactNode> = {
-  "#horizon": ({ className = "" }) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-    </svg>
-  ),
-  "#cosmosphyr": ({ className = "" }) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1Z" />
-    </svg>
-  ),
-  "#capabilities": ({ className = "" }) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <rect x="2" y="3" width="20" height="14" rx="2" />
-      <line x1="8" y1="21" x2="16" y2="21" />
-      <line x1="12" y1="17" x2="12" y2="21" />
-    </svg>
-  ),
-  "#selected-work": ({ className = "" }) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-    </svg>
-  ),
-  "#process": ({ className = "" }) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  ),
-  "#next-horizon": ({ className = "" }) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <polygon points="5 3 19 12 5 21 5 3" />
-    </svg>
-  ),
+const SECTION_ICONS: Record<string, LucideIcon> = {
+  "#horizon": Home,
+  "#cosmosphyr": Info,
+  "#capabilities": Layers,
+  "#selected-work": Briefcase,
+  "#process": Workflow,
+  "#next-horizon": Sparkles,
 };
 
-function DockItem({
-  href,
-  label,
-  mouseX,
-  isActive,
-}: {
-  href: string;
-  label: string;
-  mouseX: MotionValue<number>;
-  isActive: boolean;
-}) {
-  const ref = useRef<HTMLAnchorElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const centerXRef = useRef(0);
-
-  const updateBounds = () => {
-    if (ref.current) {
-      const bounds = ref.current.getBoundingClientRect();
-      centerXRef.current = bounds.x + bounds.width / 2;
-    }
-  };
-
-  useEffect(() => {
-    updateBounds();
-    window.addEventListener("resize", updateBounds, { passive: true });
-    window.addEventListener("orientationchange", updateBounds, { passive: true });
-    return () => {
-      window.removeEventListener("resize", updateBounds);
-      window.removeEventListener("orientationchange", updateBounds);
-    };
-  }, []);
-
-  const distance = useTransform(mouseX, (val) => {
-    if (val === Infinity || centerXRef.current === 0) return 999;
-    return val - centerXRef.current;
-  });
-
-  const widthSync = useTransform(distance, [-120, 0, 120], [38, 52, 38]);
-  const width = useSpring(widthSync, { mass: 0.1, stiffness: 170, damping: 14 });
-
-  const Icon = SECTION_ICONS[href] || SECTION_ICONS["#horizon"];
-
-  return (
-    <div className="relative flex flex-col items-center">
-      {isHovered && (
-        <motion.span
-          initial={{ opacity: 0, y: 6, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 4, scale: 0.9 }}
-          className="pointer-events-none absolute -top-8 z-30 rounded-md border border-white/10 bg-black/80 px-2 py-0.5 text-[10px] font-medium tracking-wider uppercase text-text-primary shadow-lg backdrop-blur-md whitespace-nowrap"
-        >
-          {label}
-        </motion.span>
-      )}
-
-      <motion.a
-        ref={ref}
-        href={href}
-        style={{ width, height: width }}
-        onMouseEnter={() => {
-          updateBounds();
-          setIsHovered(true);
-        }}
-        onMouseLeave={() => setIsHovered(false)}
-        aria-label={label}
-        aria-current={isActive ? "true" : undefined}
-        className={`relative flex items-center justify-center rounded-xl border transition-colors ${
-          isActive
-            ? "border-accent-ice/50 bg-white/[0.12] text-accent-ice shadow-[0_0_12px_rgba(142,191,212,0.3)]"
-            : "border-white/10 bg-white/[0.04] text-text-primary/70 hover:border-white/25 hover:bg-white/[0.08] hover:text-text-primary"
-        }`}
-      >
-        <span aria-hidden="true">
-          <Icon className="size-4 shrink-0 transition-transform duration-200" />
-        </span>
-      </motion.a>
-
-      {/* Active Dot Indicator */}
-      <span
-        aria-hidden="true"
-        className={`mt-1 size-1 rounded-full transition-all duration-300 ${
-          isActive
-            ? "bg-accent-ice shadow-[0_0_8px_var(--color-accent-ice)] scale-100 opacity-100"
-            : "scale-0 opacity-0"
-        }`}
-      />
-    </div>
-  );
-}
-
 export function MobileDock() {
-  const mouseX = useMotionValue(Infinity);
   const activeHref = useActiveNavHref();
 
   return (
     <nav
       aria-label="Mobile Navigation Dock"
-      className="pointer-events-none fixed inset-x-0 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] z-50 flex justify-center px-4 min-[1100px]:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] z-50 flex justify-center px-3 min-[1100px]:hidden"
     >
-      <motion.div
-        onMouseMove={(e) => mouseX.set(e.clientX)}
-        onMouseLeave={() => mouseX.set(Infinity)}
-        onTouchMove={(e) => {
-          if (e.touches[0]) {
-            mouseX.set(e.touches[0].clientX);
-          }
-        }}
-        onTouchEnd={() => mouseX.set(Infinity)}
-        className="pointer-events-auto flex items-end gap-2 rounded-2xl border border-white/15 bg-black/75 px-3 pt-2 pb-1 shadow-[0_8px_32px_rgba(0,0,0,0.7),0_0_24px_rgba(142,191,212,0.12)] backdrop-blur-xl"
-      >
-        {navCopy.links.map((link) => (
-          <DockItem
-            key={link.href}
-            href={link.href}
-            label={link.label}
-            mouseX={mouseX}
-            isActive={activeHref === link.href}
-          />
-        ))}
-      </motion.div>
+      <div className="pointer-events-auto relative flex items-center gap-1 sm:gap-1.5 rounded-2xl border border-white/12 border-t-white/25 bg-black/80 p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.85),0_0_24px_rgba(142,191,212,0.12)] backdrop-blur-2xl">
+        {/* Top Specular Sheen */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        />
+
+        {navCopy.links.map((link) => {
+          const isActive = activeHref === link.href;
+          const Icon = SECTION_ICONS[link.href] || Home;
+
+          return (
+            <motion.a
+              key={link.href}
+              layout
+              whileTap={{ scale: 0.9 }}
+              transition={{
+                layout: { type: "spring", stiffness: 400, damping: 32 },
+              }}
+              href={link.href}
+              onClick={(e) => {
+                e.preventDefault();
+                const target = document.getElementById(
+                  link.href.replace("#", "")
+                );
+                if (target) {
+                  target.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              aria-label={link.label}
+              aria-current={isActive ? "page" : undefined}
+              className={`relative flex h-9 items-center justify-center rounded-xl px-2.5 transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ice/60 ${
+                isActive
+                  ? "text-accent-ice"
+                  : "text-text-primary/60 hover:bg-white/[0.06] hover:text-text-primary"
+              }`}
+            >
+              {/* Active Morphing Pill Backdrop */}
+              {isActive && (
+                <motion.div
+                  layoutId="activeDockPill"
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 32,
+                  }}
+                  className="absolute inset-0 rounded-xl border border-accent-ice/40 bg-accent-ice/[0.14] shadow-[0_0_16px_rgba(142,191,212,0.22)]"
+                />
+              )}
+
+              {/* Icon & Morphing Micro-Label */}
+              <span className="relative z-10 flex items-center">
+                <Icon
+                  className="size-4 shrink-0 transition-transform duration-200"
+                  strokeWidth={isActive ? 2.2 : 1.8}
+                />
+                <AnimatePresence initial={false}>
+                  {isActive && (
+                    <motion.span
+                      initial={{ opacity: 0, width: 0, marginLeft: 0 }}
+                      animate={{
+                        opacity: 1,
+                        width: "auto",
+                        marginLeft: 6,
+                        transition: {
+                          width: {
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 32,
+                          },
+                          opacity: { duration: 0.2, delay: 0.05 },
+                        },
+                      }}
+                      exit={{
+                        opacity: 0,
+                        width: 0,
+                        marginLeft: 0,
+                        transition: {
+                          width: {
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 32,
+                          },
+                          opacity: { duration: 0.15 },
+                        },
+                      }}
+                      className="overflow-hidden whitespace-nowrap text-[11px] font-semibold tracking-wider text-accent-ice uppercase"
+                    >
+                      {link.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </span>
+            </motion.a>
+          );
+        })}
+      </div>
     </nav>
   );
 }

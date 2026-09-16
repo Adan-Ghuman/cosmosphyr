@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { NavBrand } from "./NavBrand";
 import { NavCta } from "./NavCta";
 import { NavLinks } from "./NavLinks";
@@ -8,6 +9,36 @@ import { StarBorder } from "@/shared/ui/StarBorder";
 import { NavScrollSpyProvider } from "./NavScrollSpyContext";
 
 export function SiteNav() {
+  useEffect(() => {
+    // Clean any pre-existing hash from address bar on load without jumping
+    if (window.location.hash) {
+      history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search
+      );
+    }
+
+    const handleAnchorClick = (e: MouseEvent) => {
+      const anchor = (e.target as HTMLElement).closest("a");
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href");
+      if (!href || !href.startsWith("#") || href.length <= 1) return;
+
+      e.preventDefault();
+
+      const elementId = href.slice(1);
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+
+    document.addEventListener("click", handleAnchorClick);
+    return () => document.removeEventListener("click", handleAnchorClick);
+  }, []);
+
   return (
     <NavScrollSpyProvider>
       {/* Top Header */}

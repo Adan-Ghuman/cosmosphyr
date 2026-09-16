@@ -125,6 +125,7 @@ export function GooeyNav({
       top: `${pos.y - containerRect.y}px`,
       width: `${pos.width}px`,
       height: `${pos.height}px`,
+      opacity: "1",
     };
     Object.assign(filterRef.current.style, styles);
     Object.assign(textRef.current.style, styles);
@@ -165,11 +166,24 @@ export function GooeyNav({
       if (activeLi) {
         triggerGooey(idx, activeLi as HTMLElement, true);
       }
+    } else if (idx === -1 && activeIndex !== -1) {
+      // Active section is outside primary menu items (e.g. #contact)
+      setActiveIndex(-1);
+      if (filterRef.current) filterRef.current.style.opacity = "0";
+      if (textRef.current) {
+        textRef.current.style.opacity = "0";
+        textRef.current.classList.remove("active");
+      }
     }
   }, [activeHref, activeIndex, items, triggerGooey]);
 
   useEffect(() => {
     if (!navRef.current || !containerRef.current) return;
+    if (activeIndex < 0) {
+      if (filterRef.current) filterRef.current.style.opacity = "0";
+      if (textRef.current) textRef.current.style.opacity = "0";
+      return;
+    }
     const activeLi = navRef.current.querySelectorAll("li")[activeIndex];
     if (activeLi) {
       updateEffectPosition(activeLi as HTMLElement);
@@ -177,6 +191,7 @@ export function GooeyNav({
     }
 
     const resizeObserver = new ResizeObserver(() => {
+      if (activeIndex < 0) return;
       const currentActiveLi = navRef.current?.querySelectorAll("li")[activeIndex];
       if (currentActiveLi) {
         updateEffectPosition(currentActiveLi as HTMLElement);
@@ -197,6 +212,7 @@ export function GooeyNav({
   }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, index: number) => {
+    e.preventDefault();
     const liEl = e.currentTarget.closest("li");
     if (!liEl || activeIndex === index) return;
 
@@ -210,6 +226,12 @@ export function GooeyNav({
     }, 850);
 
     triggerGooey(index, liEl as HTMLElement, true);
+
+    const target = document.querySelector(items[index].href);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+
     onNavigate?.();
   };
 

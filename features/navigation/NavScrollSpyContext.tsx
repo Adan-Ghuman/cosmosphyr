@@ -16,7 +16,10 @@ type NavScrollSpyProviderProps = {
 };
 
 export function NavScrollSpyProvider({ children }: NavScrollSpyProviderProps) {
-  const hrefs = useMemo(() => navCopy.links.map((link) => link.href), []);
+  const hrefs = useMemo(
+    () => [...navCopy.links.map((link) => link.href), navCopy.ctaHref],
+    []
+  );
   const activeHref = useNavScrollSpy(hrefs);
 
   return (
