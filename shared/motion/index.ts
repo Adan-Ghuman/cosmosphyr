@@ -1,1 +1,0 @@
-export { useScrollProgress } from "./scrollProgress";

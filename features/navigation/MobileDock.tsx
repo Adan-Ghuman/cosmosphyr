@@ -145,7 +145,7 @@ export function MobileDock() {
   return (
     <nav
       aria-label="Mobile Navigation Dock"
-      className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-4 min-[1100px]:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] z-50 flex justify-center px-4 min-[1100px]:hidden"
     >
       <motion.div
         onMouseMove={(e) => mouseX.set(e.clientX)}

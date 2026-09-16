@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { projectTypeOptions, type ProjectTypeOption } from "@/content";
 import type {
   ContactFormValues,
@@ -62,6 +62,45 @@ export function useContactForm() {
   const [touched, setTouched] = useState<Partial<Record<keyof ContactFormValues, boolean>>>({});
   const [status, setStatus] = useState<SubmissionStatus>("idle");
   const [statusMessage, setStatusMessage] = useState<string>("");
+
+  // Listen for custom category selection triggered from project modals
+  useEffect(() => {
+    const handleCategorySelect = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        category?: ProjectTypeOption;
+        projectTitle?: string;
+      }>;
+      if (customEvent.detail?.category) {
+        const category = customEvent.detail.category;
+        const projectTitle = customEvent.detail.projectTitle;
+
+        setValues((prev) => ({
+          ...prev,
+          projectType: category,
+          message:
+            prev.message.trim() === "" && projectTitle
+              ? `Hello Cosmosphyr team, I would like to discuss an engineering brief and architecture similar to "${projectTitle}".`
+              : prev.message,
+        }));
+
+        setErrors((prev) => {
+          const next = { ...prev };
+          delete next.projectType;
+          return next;
+        });
+
+        setTouched((prev) => ({
+          ...prev,
+          projectType: true,
+        }));
+      }
+    };
+
+    window.addEventListener("cosmosphyr:select-category", handleCategorySelect);
+    return () => {
+      window.removeEventListener("cosmosphyr:select-category", handleCategorySelect);
+    };
+  }, []);
 
   const handleChange = useCallback(
     (field: keyof ContactFormValues, value: string) => {

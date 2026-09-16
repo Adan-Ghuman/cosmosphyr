@@ -12,7 +12,7 @@ export function Footer() {
     <Section
       id="contact"
       ariaLabel="Contact & Transmissions"
-      className="relative px-6 !py-6 sm:!py-8 md:!py-10"
+      className="relative px-6 !pt-6 sm:!pt-8 md:!pt-10 !pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] sm:!pb-[calc(8rem+env(safe-area-inset-bottom,0px))] min-[1100px]:!pb-10"
     >
       <div className="mx-auto w-full max-w-6xl xl:max-w-7xl">
         <StarBorder

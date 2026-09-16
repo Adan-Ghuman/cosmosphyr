@@ -24,6 +24,10 @@
   --color-nav-overlay: rgba(5, 5, 7, 0.78);
   --space-nav-link-gap: clamp(0.75rem, 1.6vw, 1.35rem);
 
+  --size-dock-height: 4.25rem;
+  --space-dock-bottom: 1rem;
+  --size-dock-clearance: calc(var(--size-dock-height) + var(--space-dock-bottom) + 2rem);
+
   --size-hero-min-block: 100svh;
   --size-hero-band-mobile: min(42vw, 16rem);
   --space-hero-content-top-mobile: calc(
@@ -224,3 +228,13 @@
     }
   }
 }
+
+/* Hide scrollbar while preserving scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
