@@ -10,6 +10,10 @@ export interface AccordionGalleryItem {
   label?: string;
   link?: string;
   alt?: string;
+  status?: "live" | "archived" | "nda";
+  domain?: string;
+  warningNotice?: string;
+  onOpenDetails?: () => void;
 }
 
 export interface AccordionGalleryProps {
@@ -66,8 +70,10 @@ const AccordionGallery = ({
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLElement | null)[]>([]);
   const mediaRefs = useRef<(HTMLElement | null)[]>([]);
+  const overlayRefs = useRef<(HTMLElement | null)[]>([]);
   const barRefs = useRef<(HTMLElement | null)[]>([]);
   const textRefs = useRef<(HTMLElement | null)[]>([]);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const firstRunRef = useRef(true);
   const mediaSizeRef = useRef(320);
@@ -81,6 +87,8 @@ const AccordionGallery = ({
       ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
       : false;
 
+  const lastTotalRef = useRef<number>(0);
+
   const applyLayout = useCallback(
     (animate: boolean) => {
       const panels = panelRefs.current;
@@ -92,24 +100,24 @@ const AccordionGallery = ({
 
       tlRef.current?.kill();
       const dur = animate && !prefersReduced ? duration : 0;
-      const tl = gsap.timeline();
+      const tl = gsap.timeline({ defaults: { overwrite: 'auto' } });
 
       panels.forEach((panel, i) => {
         if (!panel) return;
         const isActive = i === active;
         const media = mediaRefs.current[i];
+        const overlay = overlayRefs.current[i];
         const bar = barRefs.current[i];
         const text = textRefs.current[i];
 
         const rot = isActive ? 0 : i < active ? tilt : -tilt;
-        const rotProp = vertical ? { rotateX: -rot } : { rotateY: rot };
+        const rotProp = tilt !== 0 ? (vertical ? { rotateX: -rot } : { rotateY: rot }) : {};
 
         tl.to(panel, { flexGrow: isActive ? grow : 1, ...rotProp, duration: dur, ease }, 0);
 
         if (media) {
           const drift = Math.max(-1.5, Math.min(1.5, active - i));
-          const shift = drift * parallax * mediaSize * 0.06;
-          const gray = grayscale ? (isActive ? 0 : 1) : 0;
+          const shift = parallax > 0 ? drift * parallax * mediaSize * 0.05 : 0;
           tl.to(
             media,
             {
@@ -117,8 +125,6 @@ const AccordionGallery = ({
               yPercent: -50,
               x: vertical ? 0 : isActive ? 0 : shift,
               y: vertical ? (isActive ? 0 : shift) : 0,
-              '--ag-gray': gray,
-              '--ag-dim': isActive ? 0 : 0.35,
               duration: dur,
               ease
             },
@@ -126,11 +132,15 @@ const AccordionGallery = ({
           );
         }
 
+        if (overlay) {
+          tl.to(overlay, { opacity: isActive ? 0.22 : 0.65, duration: dur, ease }, 0);
+        }
+
         if (showLabels && bar && text) {
           if (isActive) {
             tl.to([bar, text], { opacity: 1, x: 0, duration: dur, ease, stagger: prefersReduced ? 0 : stagger }, 0);
           } else {
-            tl.to([bar, text], { opacity: 0, x: -14, duration: dur * 0.6, ease }, 0);
+            tl.to([bar, text], { opacity: 0, x: -8, duration: dur * 0.45, ease }, 0);
           }
         }
       });
@@ -159,7 +169,11 @@ const AccordionGallery = ({
 
     const measure = () => {
       const rect = el.getBoundingClientRect();
-      const total = vertical ? rect.height : rect.width;
+      const total = Math.round(vertical ? rect.height : rect.width);
+      if (!firstRunRef.current && Math.abs(total - lastTotalRef.current) < 3) {
+        return;
+      }
+      lastTotalRef.current = total;
       const usable = Math.max(total - gap * (count - 1), 120);
       const size = Math.max(140, usable * Math.min(Math.max(expandRatio, 0.2), 0.9) * 1.22);
       mediaSizeRef.current = size;
@@ -178,21 +192,35 @@ const AccordionGallery = ({
     firstRunRef.current = false;
   }, [applyLayout]);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
       tlRef.current?.kill();
-    },
-    []
-  );
+    };
+  }, []);
 
   const handleEnter = (i: number) => {
-    if (trigger === 'hover') setActive(i);
+    if (trigger === 'hover') {
+      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+      if (i === active) return;
+      hoverTimerRef.current = setTimeout(() => {
+        setActive(i);
+      }, 30);
+    }
+  };
+
+  const handleLeave = () => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
   };
 
   const handleClick = (i: number, e: MouseEvent) => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
     if (i !== active) {
       e.preventDefault();
       setActive(i);
+    } else if (items[i]?.onOpenDetails) {
+      e.preventDefault();
+      items[i].onOpenDetails!();
     }
   };
 
@@ -203,6 +231,11 @@ const AccordionGallery = ({
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
       e.preventDefault();
       setActive((i - 1 + count) % count);
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      if (i === active && items[i]?.onOpenDetails) {
+        e.preventDefault();
+        items[i].onOpenDetails!();
+      }
     }
   };
 
@@ -212,6 +245,7 @@ const AccordionGallery = ({
     '--ag-text': textColor,
     '--ag-gap': `${gap}px`,
     '--ag-radius': `${radius}px`,
+    perspective: tilt !== 0 ? '1400px' : 'none',
     height: vertical ? `${Math.round(height * 1.6)}px` : `${height}px`
   } as CSSProperties;
 
@@ -220,12 +254,13 @@ const AccordionGallery = ({
       ref={rootRef}
       className={`accordion-gallery${vertical ? ' accordion-gallery--vertical' : ''}${className ? ` ${className}` : ''}`}
       style={rootStyle}
+      onMouseLeave={handleLeave}
       role="list"
       aria-label="Image accordion gallery"
     >
       {items.map((item, i) => {
         const isActive = i === active;
-        const Tag = (item.link ? 'a' : 'div') as 'a';
+        const Tag = (item.link && !item.onOpenDetails ? 'a' : 'div') as 'div';
         return (
           <Tag
             key={i}
@@ -234,7 +269,6 @@ const AccordionGallery = ({
             }}
             className={`ag-panel${isActive ? ' ag-panel--active' : ''}`}
             style={{ borderRadius: `${radius}px` }}
-            href={item.link || undefined}
             onClick={e => handleClick(i, e)}
             onMouseEnter={() => handleEnter(i)}
             onFocus={() => setActive(i)}
@@ -253,7 +287,13 @@ const AccordionGallery = ({
               >
                 <img src={item.image} alt={item.alt || item.label || ''} draggable={false} />
               </span>
-              <span className="ag-panel__overlay" aria-hidden="true" />
+              <span
+                className="ag-panel__overlay"
+                ref={(el: HTMLElement | null) => {
+                  overlayRefs.current[i] = el;
+                }}
+                aria-hidden="true"
+              />
             </span>
             {showLabels && (
               <span className="ag-panel__label" aria-hidden="true">
@@ -264,12 +304,45 @@ const AccordionGallery = ({
                   }}
                 />
                 <span
-                  className="ag-panel__text"
+                  className="ag-panel__content"
                   ref={(el: HTMLElement | null) => {
                     textRefs.current[i] = el;
                   }}
                 >
-                  {item.label}
+                  {(item.status || item.domain) && (
+                    <span className="ag-panel__badges">
+                      {item.warningNotice ? (
+                        <span className="ag-badge ag-badge--warning">
+                          <span className="ag-badge__dot ag-badge__dot--warning" /> Unavailable
+                        </span>
+                      ) : (
+                        item.status === 'live' && (
+                          <span className="ag-badge ag-badge--live">
+                            <span className="ag-badge__dot" /> Live
+                          </span>
+                        )
+                      )}
+                      {item.status === 'archived' && (
+                        <span className="ag-badge ag-badge--archived">
+                          Archived
+                        </span>
+                      )}
+                      {item.status === 'nda' && (
+                        <span className="ag-badge ag-badge--nda">
+                          Strict NDA
+                        </span>
+                      )}
+                      {item.domain && (
+                        <span className="ag-badge ag-badge--domain">{item.domain}</span>
+                      )}
+                    </span>
+                  )}
+                  <span className="ag-panel__title-row">
+                    <span className="ag-panel__text">{item.label}</span>
+                    <span className="ag-panel__cta">
+                      {item.warningNotice ? 'Service Notice →' : item.status === 'live' ? 'Inspect & Launch ↗' : 'View Case Study →'}
+                    </span>
+                  </span>
                 </span>
               </span>
             )}

@@ -1,12 +1,31 @@
+export type ProjectStatus = "live" | "archived" | "nda";
+
+export type ProjectDomain =
+  | "Data & Analytics"
+  | "AI & Intelligent Systems"
+  | "Software Engineering"
+  | "Enterprise Systems"
+  | "Web & Mobile";
+
 export type Project = {
   id: string;
   title: string;
+  client?: string;
+  domain: ProjectDomain;
+  status: ProjectStatus;
   problem: string;
   solution: string;
   technology: string[];
   outcome: string;
   isNDA: boolean;
   demoUrl?: string;
+  image?: string;
+  metrics?: { label: string; value: string }[];
+  architectureHighlights?: string[];
+  archiveNotice?: string;
+  confidentialityNotice?: string;
+  warningNotice?: string;
+  gallery?: string[];
 };
 export type CapabilityIcon = "ai" | "software" | "web-mobile" | "cloud";
 
@@ -77,6 +96,7 @@ export type ProjectTypeOption =
   | "Software Engineering"
   | "Web & Mobile"
   | "Cloud & Automation"
+  | "Data & Analytics"
   | "Other";
 
 export const projectTypeOptions: ProjectTypeOption[] = [
@@ -84,5 +104,6 @@ export const projectTypeOptions: ProjectTypeOption[] = [
   "Software Engineering",
   "Web & Mobile",
   "Cloud & Automation",
+  "Data & Analytics",
   "Other",
 ];
